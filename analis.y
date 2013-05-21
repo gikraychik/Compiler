@@ -533,6 +533,7 @@ namelist_decl : namelist_decl COMA NAME
 		}
 		;
 block :		BLOCK commands KCOLB
+				| command;
 		;
 func_block :	BLOCK
 		{

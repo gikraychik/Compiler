@@ -276,7 +276,7 @@ void in_chain_param(const char *type, char *param)
 }
 bool inStrings(char *name)
 {
-	for (set<char *>::iterator i = strings.begin(); i != strings.end(); i++)
+	for (set<const char *>::iterator i = strings.begin(); i != strings.end(); i++)
 	{
 		if (!strcmp(*i, name)) { return true; }
 	}

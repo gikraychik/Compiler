@@ -1,5 +1,9 @@
-s1, s2: string;
-s1:= "hello";
-s2:= s1[2+3] + s2;
 x, y: integer;
-x:= s1 == s2;
+read(x);
+read(y);
+if y==1 ==>
+	if (x == 1) ==>
+		write(x);
+	!=> write(y);
+!=> write(y);
+	

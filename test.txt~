@@ -1,12 +1,9 @@
-s1, s2, s3: string;
-s1:= "h";
-s2:= "hhhhhhhhhh";
-while (1) loop
-	str, p: string;
-	str := "";
-	while (s1 == s2) loop
-		str := str + s1;
-	pool
-	p := p[2] + str;
-pool
-write(s1);
+x, y: integer;
+read(x);
+read(y);
+if y==1 ==>
+	if (x == 1) ==>
+		write(x); write(y);
+	!=> write(y);
+!=> write(y);
+	
