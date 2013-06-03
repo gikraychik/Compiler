@@ -50,7 +50,9 @@ extern int yydebug;
      MUL = 259,
      DIV = 260,
      ADD = 261,
-     SUB = 262
+     SUB = 262,
+     OBRACE = 263,
+     CBRACE = 264
    };
 #endif
 

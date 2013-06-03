@@ -24,6 +24,8 @@ int main()
 %token DIV
 %token ADD
 %token SUB
+%token OBRACE
+%token CBRACE
 
 %%
 val : expr { printf("%d", $$); }
@@ -32,9 +34,12 @@ expr : 	/* empty */
 	| expr SUB term { $$ = $1 - $3; }
 	| term
 	;
-term :	term MUL NUMBER { $$ = $1*$3; }
-	| term DIV NUMBER { $$ = $1/$3; }
-	| NUMBER { $$ = $1; }
+term :	term MUL factor { $$ = $1*$3; }
+	| term DIV factor { $$ = $1/$3; }
+	| factor { $$ = $1; }
 	;
+factor:	NUMBER { $$ = $1; }
+	| OBRACE expr CBRACE { $$ = $2; }
+
 
 %%

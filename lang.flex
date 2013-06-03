@@ -17,6 +17,8 @@ DIGIT [0-9]
 	"+"			{ return ADD; }
 	"-"			{ return SUB; }
 	"/"			{ return DIV; }
+	"("			{ return OBRACE; }
+	")"			{ return CBRACE; }
 }
 
 %%
