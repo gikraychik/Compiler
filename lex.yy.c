@@ -770,27 +770,27 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 15 "lang.flex"
-{ printf("NUMBER "); yylval = atoi(yytext); return NUMBER; }
+{ yylval = atoi(yytext); return NUMBER; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 16 "lang.flex"
-{ printf("MULT "); return MUL; }
+{ return MUL; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 17 "lang.flex"
-{ printf("ADD "); return ADD; }
+{ return ADD; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 18 "lang.flex"
-{ printf("SUB "); return SUB; }
+{ return SUB; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 19 "lang.flex"
-{ printf("DIV "); return DIV; }
+{ return DIV; }
 	YY_BREAK
 
 case 7:

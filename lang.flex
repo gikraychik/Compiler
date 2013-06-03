@@ -12,11 +12,11 @@ DIGIT [0-9]
 %%
 <INITIAL>{
 	[ \t]			{ }
-	{DIGIT}+		{ printf("NUMBER "); yylval = atoi(yytext); return NUMBER; }
-	"*"			{ printf("MULT "); return MUL; }
-	"+"			{ printf("ADD "); return ADD; }
-	"-"			{ printf("SUB "); return SUB; }
-	"/"			{ printf("DIV "); return DIV; }
+	{DIGIT}+		{ yylval = atoi(yytext); return NUMBER; }
+	"*"			{ return MUL; }
+	"+"			{ return ADD; }
+	"-"			{ return SUB; }
+	"/"			{ return DIV; }
 }
 
 %%

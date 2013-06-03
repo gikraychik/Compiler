@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-
+int result = 0;
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
@@ -26,15 +26,15 @@ int main()
 %token SUB
 
 %%
-expr :	/* empty */ { printf("Empty"); }
-	| term ADD expr
-	{
-		printf("%d", $1);
-	}
-	| term SUB expr
+val : expr { printf("%d", $$); }
+expr : 	/* empty */
+	| expr ADD term { $$ = $1 + $3;}
+	| expr SUB term { $$ = $1 - $3; }
+	| term
 	;
-term : 	NUMBER { printf("%d", $1); }
-	| NUMBER MUL term
-	| NUMBER DIV term
+term :	term MUL NUMBER { $$ = $1*$3; }
+	| term DIV NUMBER { $$ = $1/$3; }
+	| NUMBER { $$ = $1; }
 	;
+
 %%
