@@ -12,11 +12,14 @@ DIGIT [0-9]
 %%
 <INITIAL>{
 	[ \t]			{ }
-	{DIGIT}+		{ yylval = atoi(yytext); return NUMBER; }
+	{DIGIT}+"."{DIGIT}+	{ printf("Float: %s (%g)\n", yytext, yylval); yylval = atof(yytext); return NUMBER; }
+	{DIGIT}+		{ printf("Int: %s (%g)\n", yytext, yylval); yylval = atof(yytext); return NUMBER; }
 	"*"			{ return MUL; }
 	"+"			{ return ADD; }
 	"-"			{ return SUB; }
 	"/"			{ return DIV; }
+	"("			{ return OBRACE; }
+	")"			{ return CBRACE; }
 }
 
 %%

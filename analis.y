@@ -1,7 +1,8 @@
 %{
 #include <stdio.h>
 #include <string.h>
-int result = 0;
+#define YYSTYPE double
+
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
@@ -19,6 +20,7 @@ int main()
 
 %}
 
+
 %token NUMBER
 %token MUL
 %token DIV
@@ -28,7 +30,7 @@ int main()
 %token CBRACE
 
 %%
-val : expr { printf("%d", $$); }
+val : expr { printf("%f", $$); };
 expr : 	/* empty */
 	| expr ADD term { $$ = $1 + $3;}
 	| expr SUB term { $$ = $1 - $3; }

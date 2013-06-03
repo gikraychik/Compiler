@@ -67,7 +67,8 @@
 
 #include <stdio.h>
 #include <string.h>
-int result = 0;
+#define YYSTYPE double
+
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
@@ -85,7 +86,7 @@ int main()
 
 
 /* Line 336 of yacc.c  */
-#line 89 "analis.tab.c"
+#line 90 "analis.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -160,7 +161,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 353 of yacc.c  */
-#line 164 "analis.tab.c"
+#line 165 "analis.tab.c"
 
 #ifdef short
 # undef short
@@ -451,8 +452,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    31,    31,    32,    33,    34,    35,    37,    38,    39,
-      41,    42
+       0,    33,    33,    34,    35,    36,    37,    39,    40,    41,
+      43,    44
 };
 #endif
 
@@ -1371,61 +1372,55 @@ yyreduce:
     {
         case 2:
 /* Line 1787 of yacc.c  */
-#line 31 "analis.y"
-    { printf("%d", (yyval)); }
-    break;
-
-  case 3:
-/* Line 1787 of yacc.c  */
-#line 32 "analis.y"
-    { printf("Lol"); }
+#line 33 "analis.y"
+    { printf("%f", (yyval)); }
     break;
 
   case 4:
 /* Line 1787 of yacc.c  */
-#line 33 "analis.y"
+#line 35 "analis.y"
     { (yyval) = (yyvsp[(1) - (3)]) + (yyvsp[(3) - (3)]);}
     break;
 
   case 5:
 /* Line 1787 of yacc.c  */
-#line 34 "analis.y"
+#line 36 "analis.y"
     { (yyval) = (yyvsp[(1) - (3)]) - (yyvsp[(3) - (3)]); }
     break;
 
   case 7:
 /* Line 1787 of yacc.c  */
-#line 37 "analis.y"
+#line 39 "analis.y"
     { (yyval) = (yyvsp[(1) - (3)])*(yyvsp[(3) - (3)]); }
     break;
 
   case 8:
 /* Line 1787 of yacc.c  */
-#line 38 "analis.y"
+#line 40 "analis.y"
     { (yyval) = (yyvsp[(1) - (3)])/(yyvsp[(3) - (3)]); }
     break;
 
   case 9:
 /* Line 1787 of yacc.c  */
-#line 39 "analis.y"
+#line 41 "analis.y"
     { (yyval) = (yyvsp[(1) - (1)]); }
     break;
 
   case 10:
 /* Line 1787 of yacc.c  */
-#line 41 "analis.y"
+#line 43 "analis.y"
     { (yyval) = (yyvsp[(1) - (1)]); }
     break;
 
   case 11:
 /* Line 1787 of yacc.c  */
-#line 42 "analis.y"
+#line 44 "analis.y"
     { (yyval) = (yyvsp[(2) - (3)]); }
     break;
 
 
 /* Line 1787 of yacc.c  */
-#line 1429 "analis.tab.c"
+#line 1424 "analis.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1655,6 +1650,6 @@ yyreturn:
 
 
 /* Line 2048 of yacc.c  */
-#line 45 "analis.y"
+#line 47 "analis.y"
 
 
