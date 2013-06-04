@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#define YYSTYPE double
+#define YYSTYPE char *
 
 void yyerror(const char *s)
 {
@@ -21,27 +21,15 @@ int main()
 %}
 
 
-%token NUMBER
-%token MUL
-%token DIV
-%token ADD
-%token SUB
-%token OBRACE
-%token CBRACE
+%token DIGIT
+%token LETTER
+
 
 %%
-val : expr { printf("%f", $$); };
 expr : 	/* empty */
-	| expr ADD term { $$ = $1 + $3;}
-	| expr SUB term { $$ = $1 - $3; }
-	| term
+	| expr DIGIT { printf("%s", yylval); }
+	| expr LETTER { printf("%s", yylval); }
 	;
-term :	term MUL factor { $$ = $1*$3; }
-	| term DIV factor { $$ = $1/$3; }
-	| factor { $$ = $1; }
-	;
-factor:	NUMBER { $$ = $1; }
-	| OBRACE expr CBRACE { $$ = $2; }
 
 
 %%

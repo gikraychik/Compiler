@@ -10,18 +10,12 @@
 DIGIT [0-9]
 
 %%
-<INITIAL>{
-	[ \t]			{ }
-	{DIGIT}+"."{DIGIT}+	{ printf("Float: %s (%f)\n", yytext, yylval); yylval = atof(yytext); return NUMBER; }
-	{DIGIT}+		{ printf("Int: %s (%f)\n", yytext, yylval); yylval = atof(yytext); return NUMBER; }
-	"*"			{ return MUL; }
-	"+"			{ return ADD; }
-	"-"			{ return SUB; }
-	"/"			{ return DIV; }
-	"("			{ return OBRACE; }
-	")"			{ return CBRACE; }
+<INITIAL>
+{
+	DIGIT		{ yylval = "digit\n"; return DIGIT; }
+	"a"		{ yylval = "letter a\n"; return LETTER; }
+	"b"		{ yylval = "letter b\n"; return LETTER; }
 }
-
 %%
 
 /*int main()
