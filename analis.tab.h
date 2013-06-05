@@ -46,14 +46,66 @@ extern int yydebug;
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     DIGIT = 258,
-     LETTER = 259
+     NUMBER = 258,
+     NAME = 259,
+     LABELNAME = 260,
+     REF = 261,
+     COLON = 262,
+     SEMICOLON = 263,
+     DELIM = 264,
+     STRINGCONST = 265,
+     QUOTE = 266,
+     STRING = 267,
+     INTEGER = 268,
+     COMA = 269,
+     RETURN = 270,
+     ASSIGN = 271,
+     LT = 272,
+     LE = 273,
+     GT = 274,
+     GE = 275,
+     EQ = 276,
+     NE = 277,
+     OR = 278,
+     AND = 279,
+     NOT = 280,
+     IF = 281,
+     WHILE = 282,
+     LOOP = 283,
+     POOL = 284,
+     READ = 285,
+     WRITE = 286,
+     LABEL = 287,
+     RECOPENBRACE = 288,
+     RECCLOSEBRACE = 289,
+     BLOCK = 290,
+     KCOLB = 291,
+     THEN = 292,
+     ELSE = 293,
+     GOTO = 294,
+     ADD = 295,
+     SUB = 296,
+     MUL = 297,
+     DIV = 298,
+     OBRACE = 299,
+     CBRACE = 300
    };
 #endif
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+{
+/* Line 2049 of yacc.c  */
+#line 23 "analis.y"
+
+	int number;
+	char *string;
+
+
+/* Line 2049 of yacc.c  */
+#line 108 "analis.tab.h"
+} YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
