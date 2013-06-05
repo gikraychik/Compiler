@@ -1,7 +1,6 @@
 %{
 #include <stdio.h>
 #include <string.h>
-
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);

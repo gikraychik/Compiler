@@ -1,7 +1,15 @@
+extern "C"
+{
+	int yyparse(void);
+	int yylex(void);
+	int yywrap()
+	{
+		return 1;
+	}
+}
 %{
 #include <stdio.h>
 #include <string.h>
-
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
@@ -126,6 +134,7 @@ string_expr :	string_expr ADD string_factor
 		;
 string_factor :	OBRACE string_factor CBRACE
 		| STRINGCONST
+		| STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE
 		| NAME
 		| NAME RECOPENBRACE int_expr RECCLOSEBRACE
 		;

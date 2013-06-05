@@ -67,7 +67,6 @@
 
 #include <stdio.h>
 #include <string.h>
-
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
@@ -85,7 +84,7 @@ int main()
 
 
 /* Line 336 of yacc.c  */
-#line 89 "analis.tab.c"
+#line 88 "analis.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -172,14 +171,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 350 of yacc.c  */
-#line 23 "analis.y"
+#line 22 "analis.y"
 
 	int number;
 	char *string;
 
 
 /* Line 350 of yacc.c  */
-#line 183 "analis.tab.c"
+#line 182 "analis.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -207,7 +206,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 353 of yacc.c  */
-#line 211 "analis.tab.c"
+#line 210 "analis.tab.c"
 
 #ifdef short
 # undef short
@@ -530,14 +529,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    34,    34,    35,    37,    38,    40,    41,    42,    44,
-      45,    46,    47,    49,    50,    52,    54,    55,    57,    59,
-      61,    63,    65,    66,    68,    70,    72,    73,    74,    76,
-      78,    79,    80,    82,    84,    85,    86,    88,    89,    90,
-      92,    93,    94,    96,    97,    98,    99,   101,   102,   103,
-     104,   105,   106,   108,   109,   111,   112,   114,   115,   116,
-     117,   118,   119,   120,   121,   122,   124,   125,   127,   128,
-     129,   130,   131,   133,   134,   136,   138
+       0,    33,    33,    34,    36,    37,    39,    40,    41,    43,
+      44,    45,    46,    48,    49,    51,    53,    54,    56,    58,
+      60,    62,    64,    65,    67,    69,    71,    72,    73,    75,
+      77,    78,    79,    81,    83,    84,    85,    87,    88,    89,
+      91,    92,    93,    95,    96,    97,    98,   100,   101,   102,
+     103,   104,   105,   107,   108,   110,   111,   113,   114,   115,
+     116,   117,   118,   119,   120,   121,   123,   124,   126,   127,
+     128,   129,   130,   132,   133,   135,   137
 };
 #endif
 
@@ -1564,7 +1563,7 @@ yyreduce:
     {
       
 /* Line 1787 of yacc.c  */
-#line 1568 "analis.tab.c"
+#line 1567 "analis.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1794,6 +1793,6 @@ yyreturn:
 
 
 /* Line 2048 of yacc.c  */
-#line 142 "analis.y"
+#line 141 "analis.y"
 
 

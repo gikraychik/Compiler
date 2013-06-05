@@ -1107,20 +1107,15 @@ case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
 #line 61 "lang.flex"
-{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }
+{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }				
 	YY_BREAK
-/*V
-	COMA[ \t\n]*NAME[ \t\n]*COMA	{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }
-	[ \t\n]*NAME[ \t\n]*COMA	{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }
-	COMA[ \t\n]*NAME[ \t\n]*":"	{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }
-	*/				
 
 case 41:
 YY_RULE_SETUP
-#line 69 "lang.flex"
+#line 64 "lang.flex"
 ECHO;
 	YY_BREAK
-#line 1124 "lex.yy.c"
+#line 1119 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2171,7 +2166,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 69 "lang.flex"
+#line 64 "lang.flex"
 
 
 
