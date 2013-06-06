@@ -11,6 +11,8 @@ using namespace std;
 vector<int> v;
 map<char *, char *> m;
 vector<char *> names;
+int num_label = 0;
+map<char *, char *> refs;
 
 extern "C"
 {
@@ -61,12 +63,31 @@ char *get_name()
 	char *res = itoa(v.back());
 	return res;
 }
+char *get_label()
+{
+	num_label++;
+	char * res = itoa(num_label);
+	res[0] = 'b';
+	return res;
+}
 char *match(const char *s)
 {
 	for (map<char *, char *>::iterator i = m.begin(); i != m.end(); i++)
 	{
 		char *first = (*i).first;
 		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
+char *match_ref(const char *internal_name)
+{
+	for (map<char *, char *>::iterator i = refs.begin(); i != refs.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, internal_name))
 		{
 			return (*i).second;
 		}
@@ -83,6 +104,18 @@ int init_int(char *name)
 {
 	char *s = get_name();
 	cout << "INTEGER " << s << ", " << 0 << endl;
+	move(s, name);
+	return v.back();
+}
+int init_const_string(const char *value)
+{
+	cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl;
+	return v.back();
+}
+int init_string(char *name)
+{
+	char *s = get_name();
+	cout << "STRING " << get_name() << ", " << "" << endl;
 	move(s, name);
 	return v.back();
 }
@@ -121,13 +154,9 @@ decl :		decl_func
 		| decl_label
 		;
 type :		STRING
-		{
-			cout << "STRING";
-		}
+		{}
 		| INTEGER
-		{
-			cout << "INTEGER";
-		}
+		{}
 		;
 decl_var :	namelist COLON STRING SEMICOLON
 		{
@@ -137,8 +166,8 @@ decl_var :	namelist COLON STRING SEMICOLON
 		{
 			for (int i = 0; i < names.size(); i++)
 			{
-				m.insert(pair<char *, char *>(names[i], itoa(init_int(0))));
-				//m[names[i]] = itoa(init_int(0));
+				//m.insert(pair<char *, char *>(names[i], itoa(init_int(0))));
+				m[names[i]] = itoa(init_int(0));
 			}
 			names.clear();
 		}
@@ -152,9 +181,21 @@ namelist : 	namelist COMA NAME
 			names.push_back($1);
 		}
 		;
-decl_ref :	NAME REF NAME COLON type
+decl_ref :	NAME REF NAME COLON type SEMICOLON
+		{
+			char *internal_name = get_name();
+			m[$1] = internal_name;
+			char *image = match($3);
+			refs[internal_name] = image;
+			cout << "STRING " << internal_name << ", " << "\"" << image << "\"" << endl;
+		}
 		;
-decl_label :	LABEL LABELNAME SEMICOLON
+decl_label :	LABEL NAME SEMICOLON
+		{
+			char *name = get_label();
+			m[$2] = name;
+			cout << "LABEL " << name << endl;
+		}
 		;
 decl_func :	NAME COLON type OBRACE chain_param CBRACE func_block
 		;
@@ -181,7 +222,10 @@ io :		READ OBRACE NAME CBRACE SEMICOLON
 		| WRITE OBRACE NAME CBRACE SEMICOLON
 		| WRITE OBRACE NUMBER CBRACE SEMICOLON
 		;
-goto : 		GOTO LABELNAME SEMICOLON
+goto : 		GOTO NAME SEMICOLON
+		{
+			cout << "GOTO " << match($2) << endl;
+		}
 		;
 expr : 		string_expr
 		| int_expr
@@ -195,7 +239,7 @@ int_expr :	int_expr ADD int_term
 			int num = init_int(0);
 			char *name = itoa(num);
 			$<string>$ = name;
-			cout << "ADD	 " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+			cout << "ADD " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
 		}
 		| int_expr SUB int_term
 		{
@@ -235,8 +279,15 @@ int_factor :	NUMBER
 		}
 		| NAME
 		{
-			$<string>$ = match($1);
-			cout << "Testing: " << match($1) << endl;
+			char *internal_name = match($1);
+			char *ref = match_ref(internal_name);
+			if (ref == NULL) { $<string>$ = internal_name; }
+			else
+			{
+				//cout << "LOL:" << *(ref+1) << endl; 
+				$<string>$ = ref;
+			}
+			//cout << "Testing: " << match($1) << endl;
 		}
 		| OBRACE int_expr CBRACE
 		{
@@ -252,13 +303,37 @@ act_params :	namelist COMA NAME
 		| STRING
 		;
 bool_expr :	bool_expr OR bool_term
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "OR " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+		}
 		| bool_term
+		{
+			$<string>$ = $<string>1;
+		}
 		;
 bool_term :	bool_term AND bool_factor
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "AND " << $<string>1 << ", " << $<string>3 << ", " << name << endl;
+		}
 		| bool_factor
+		{
+			$<string>$ = $<string>1;
+		}
 		;
 bool_factor :	OBRACE bool_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
 		| int_expr LT int_expr
+		{
+			
+		}
 		| int_expr LE int_expr
 		| int_expr GT int_expr
 		| int_expr GE int_expr

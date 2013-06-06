@@ -1078,13 +1078,13 @@ case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
 #line 57 "lang.flex"
-{ return COMA; }
+{ /*printf("COMA");*/ return COMA; }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
 #line 58 "lang.flex"
-{ /*printf("COLON"); */return COLON; }
+{ /*printf("COLON");*/ return COLON; }
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
@@ -1108,15 +1108,23 @@ case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
 #line 62 "lang.flex"
-{ yylval.string = strdup(yytext); /*printf("NAME");*/ return NAME; }				
+{ 
+							char *s = yytext;
+							while (1) {
+								if ((*yytext == ' ') || (*yytext == 0)) { break; }
+								yytext++;
+							}
+							*yytext = 0; yytext = s;
+							yylval.string = strdup(yytext); /*printf(yylval.string);*/ return NAME;
+						}
 	YY_BREAK
 
 case 41:
 YY_RULE_SETUP
-#line 65 "lang.flex"
+#line 73 "lang.flex"
 ECHO;
 	YY_BREAK
-#line 1120 "lex.yy.c"
+#line 1128 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2167,7 +2175,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 65 "lang.flex"
+#line 73 "lang.flex"
 
 
 

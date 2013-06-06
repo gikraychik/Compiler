@@ -1,5 +1,6 @@
 Terminals unused in grammar
 
+   LABELNAME
    DELIM
    QUOTE
 
@@ -40,9 +41,9 @@ Grammar
    16 namelist: namelist COMA NAME
    17         | NAME
 
-   18 decl_ref: NAME REF NAME COLON type
+   18 decl_ref: NAME REF NAME COLON type SEMICOLON
 
-   19 decl_label: LABEL LABELNAME SEMICOLON
+   19 decl_label: LABEL NAME SEMICOLON
 
    20 decl_func: NAME COLON type OBRACE chain_param CBRACE func_block
 
@@ -65,7 +66,7 @@ Grammar
    31   | WRITE OBRACE NAME CBRACE SEMICOLON
    32   | WRITE OBRACE NUMBER CBRACE SEMICOLON
 
-   33 goto: GOTO LABELNAME SEMICOLON
+   33 goto: GOTO NAME SEMICOLON
 
    34 expr: string_expr
    35     | int_expr
@@ -129,11 +130,11 @@ Terminals, with rules where they appear
 $end (0) 0
 error (256)
 NUMBER (258) 32 43 48 51
-NAME (259) 16 17 18 20 29 30 31 44 46 47 50 64 71 72
-LABELNAME (260) 19 33
+NAME (259) 16 17 18 19 20 29 30 31 33 44 46 47 50 64 71 72
+LABELNAME (260)
 REF (261) 18
 COLON (262) 14 15 18 20 21
-SEMICOLON (263) 14 15 19 25 29 30 31 32 33
+SEMICOLON (263) 14 15 18 19 25 29 30 31 32 33
 DELIM (264)
 STRINGCONST (265) 69 70
 QUOTE (266)
@@ -276,7 +277,7 @@ state 0
 state 1
 
    17 namelist: NAME .
-   18 decl_ref: NAME . REF NAME COLON type
+   18 decl_ref: NAME . REF NAME COLON type SEMICOLON
    20 decl_func: NAME . COLON type OBRACE chain_param CBRACE func_block
    29 assign: NAME . ASSIGN expr SEMICOLON
 
@@ -339,16 +340,16 @@ state 5
 
 state 6
 
-   19 decl_label: LABEL . LABELNAME SEMICOLON
+   19 decl_label: LABEL . NAME SEMICOLON
 
-    LABELNAME  shift, and go to state 40
+    NAME  shift, and go to state 40
 
 
 state 7
 
-   33 goto: GOTO . LABELNAME SEMICOLON
+   33 goto: GOTO . NAME SEMICOLON
 
-    LABELNAME  shift, and go to state 41
+    NAME  shift, and go to state 41
 
 
 state 8
@@ -492,7 +493,7 @@ state 23
 
 state 24
 
-   18 decl_ref: NAME REF . NAME COLON type
+   18 decl_ref: NAME REF . NAME COLON type SEMICOLON
 
     NAME  shift, and go to state 46
 
@@ -682,14 +683,14 @@ state 39
 
 state 40
 
-   19 decl_label: LABEL LABELNAME . SEMICOLON
+   19 decl_label: LABEL NAME . SEMICOLON
 
     SEMICOLON  shift, and go to state 79
 
 
 state 41
 
-   33 goto: GOTO LABELNAME . SEMICOLON
+   33 goto: GOTO NAME . SEMICOLON
 
     SEMICOLON  shift, and go to state 80
 
@@ -726,7 +727,7 @@ state 45
 
 state 46
 
-   18 decl_ref: NAME REF NAME . COLON type
+   18 decl_ref: NAME REF NAME . COLON type SEMICOLON
 
     COLON  shift, and go to state 84
 
@@ -1136,14 +1137,14 @@ state 78
 
 state 79
 
-   19 decl_label: LABEL LABELNAME SEMICOLON .
+   19 decl_label: LABEL NAME SEMICOLON .
 
     $default  reduce using rule 19 (decl_label)
 
 
 state 80
 
-   33 goto: GOTO LABELNAME SEMICOLON .
+   33 goto: GOTO NAME SEMICOLON .
 
     $default  reduce using rule 33 (goto)
 
@@ -1171,7 +1172,7 @@ state 83
 
 state 84
 
-   18 decl_ref: NAME REF NAME COLON . type
+   18 decl_ref: NAME REF NAME COLON . type SEMICOLON
 
     STRING   shift, and go to state 47
     INTEGER  shift, and go to state 48
@@ -1550,9 +1551,9 @@ state 119
 
 state 120
 
-   18 decl_ref: NAME REF NAME COLON type .
+   18 decl_ref: NAME REF NAME COLON type . SEMICOLON
 
-    $default  reduce using rule 18 (decl_ref)
+    SEMICOLON  shift, and go to state 140
 
 
 state 121
@@ -1573,7 +1574,7 @@ state 123
 
    20 decl_func: NAME COLON type OBRACE chain_param . CBRACE func_block
 
-    CBRACE  shift, and go to state 140
+    CBRACE  shift, and go to state 141
 
 
 state 124
@@ -1583,8 +1584,8 @@ state 124
 
     NAME  shift, and go to state 121
 
-    decl_var  go to state 141
-    namelist  go to state 142
+    decl_var  go to state 142
+    namelist  go to state 143
 
 
 state 125
@@ -1593,7 +1594,7 @@ state 125
    38         | int_expr . SUB int_term
    72 string_factor: NAME RECOPENBRACE int_expr . RECCLOSEBRACE
 
-    RECCLOSEBRACE  shift, and go to state 143
+    RECCLOSEBRACE  shift, and go to state 144
     ADD            shift, and go to state 68
     SUB            shift, and go to state 69
 
@@ -1604,7 +1605,7 @@ state 126
    38         | int_expr . SUB int_term
    70 string_factor: STRINGCONST RECOPENBRACE int_expr . RECCLOSEBRACE
 
-    RECCLOSEBRACE  shift, and go to state 144
+    RECCLOSEBRACE  shift, and go to state 145
     ADD            shift, and go to state 68
     SUB            shift, and go to state 69
 
@@ -1651,9 +1652,9 @@ state 131
    48           | namelist COMA . NUMBER
    49           | namelist COMA . STRING
 
-    NUMBER  shift, and go to state 145
-    NAME    shift, and go to state 146
-    STRING  shift, and go to state 147
+    NUMBER  shift, and go to state 146
+    NAME    shift, and go to state 147
+    STRING  shift, and go to state 148
 
 
 state 132
@@ -1685,7 +1686,7 @@ state 134
     READ   shift, and go to state 4
     WRITE  shift, and go to state 5
     LABEL  shift, and go to state 6
-    KCOLB  shift, and go to state 148
+    KCOLB  shift, and go to state 149
     GOTO   shift, and go to state 7
 
     command     go to state 43
@@ -1710,7 +1711,7 @@ state 135
 
     BLOCK  shift, and go to state 111
 
-    block  go to state 149
+    block  go to state 150
 
 
 state 136
@@ -1743,53 +1744,60 @@ state 139
 
 state 140
 
-   20 decl_func: NAME COLON type OBRACE chain_param CBRACE . func_block
+   18 decl_ref: NAME REF NAME COLON type SEMICOLON .
 
-    BLOCK  shift, and go to state 150
-
-    func_block  go to state 151
+    $default  reduce using rule 18 (decl_ref)
 
 
 state 141
+
+   20 decl_func: NAME COLON type OBRACE chain_param CBRACE . func_block
+
+    BLOCK  shift, and go to state 151
+
+    func_block  go to state 152
+
+
+state 142
 
    22 decl_list: decl_list decl_var .
 
     $default  reduce using rule 22 (decl_list)
 
 
-state 142
+state 143
 
    14 decl_var: namelist . COLON STRING SEMICOLON
    15         | namelist . COLON INTEGER SEMICOLON
    16 namelist: namelist . COMA NAME
    21 chain_param: decl_list namelist . COLON type
 
-    COLON  shift, and go to state 152
+    COLON  shift, and go to state 153
     COMA   shift, and go to state 45
 
 
-state 143
+state 144
 
    72 string_factor: NAME RECOPENBRACE int_expr RECCLOSEBRACE .
 
     $default  reduce using rule 72 (string_factor)
 
 
-state 144
+state 145
 
    70 string_factor: STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE .
 
     $default  reduce using rule 70 (string_factor)
 
 
-state 145
+state 146
 
    48 act_params: namelist COMA NUMBER .
 
     $default  reduce using rule 48 (act_params)
 
 
-state 146
+state 147
 
    16 namelist: namelist COMA NAME .
    47 act_params: namelist COMA NAME .
@@ -1798,28 +1806,28 @@ state 146
     $default  reduce using rule 16 (namelist)
 
 
-state 147
+state 148
 
    49 act_params: namelist COMA STRING .
 
     $default  reduce using rule 49 (act_params)
 
 
-state 148
+state 149
 
    24 block: BLOCK commands KCOLB .
 
     $default  reduce using rule 24 (block)
 
 
-state 149
+state 150
 
    75 cond: IF bool_expr THEN block ELSE block .
 
     $default  reduce using rule 75 (cond)
 
 
-state 150
+state 151
 
    25 func_block: BLOCK . commands RETURN expr SEMICOLON KCOLB
 
@@ -1831,7 +1839,7 @@ state 150
     LABEL  shift, and go to state 6
     GOTO   shift, and go to state 7
 
-    commands    go to state 153
+    commands    go to state 154
     command     go to state 10
     decl        go to state 11
     decl_var    go to state 12
@@ -1848,32 +1856,32 @@ state 150
     cycle       go to state 23
 
 
-state 151
+state 152
 
    20 decl_func: NAME COLON type OBRACE chain_param CBRACE func_block .
 
     $default  reduce using rule 20 (decl_func)
 
 
-state 152
+state 153
 
    14 decl_var: namelist COLON . STRING SEMICOLON
    15         | namelist COLON . INTEGER SEMICOLON
    21 chain_param: decl_list namelist COLON . type
 
-    STRING   shift, and go to state 154
-    INTEGER  shift, and go to state 155
+    STRING   shift, and go to state 155
+    INTEGER  shift, and go to state 156
 
-    type  go to state 156
+    type  go to state 157
 
 
-state 153
+state 154
 
     3 commands: commands . command
    25 func_block: BLOCK commands . RETURN expr SEMICOLON KCOLB
 
     NAME    shift, and go to state 1
-    RETURN  shift, and go to state 157
+    RETURN  shift, and go to state 158
     IF      shift, and go to state 2
     WHILE   shift, and go to state 3
     READ    shift, and go to state 4
@@ -1897,7 +1905,7 @@ state 153
     cycle       go to state 23
 
 
-state 154
+state 155
 
    12 type: STRING .
    14 decl_var: namelist COLON STRING . SEMICOLON
@@ -1907,7 +1915,7 @@ state 154
     $default  reduce using rule 12 (type)
 
 
-state 155
+state 156
 
    13 type: INTEGER .
    15 decl_var: namelist COLON INTEGER . SEMICOLON
@@ -1917,14 +1925,14 @@ state 155
     $default  reduce using rule 13 (type)
 
 
-state 156
+state 157
 
    21 chain_param: decl_list namelist COLON type .
 
     $default  reduce using rule 21 (chain_param)
 
 
-state 157
+state 158
 
    25 func_block: BLOCK commands RETURN . expr SEMICOLON KCOLB
 
@@ -1934,7 +1942,7 @@ state 157
     NOT          shift, and go to state 29
     OBRACE       shift, and go to state 52
 
-    expr           go to state 158
+    expr           go to state 159
     int_expr       go to state 54
     int_term       go to state 32
     int_factor     go to state 33
@@ -1945,21 +1953,21 @@ state 157
     string_factor  go to state 57
 
 
-state 158
+state 159
 
    25 func_block: BLOCK commands RETURN expr . SEMICOLON KCOLB
 
-    SEMICOLON  shift, and go to state 159
-
-
-state 159
-
-   25 func_block: BLOCK commands RETURN expr SEMICOLON . KCOLB
-
-    KCOLB  shift, and go to state 160
+    SEMICOLON  shift, and go to state 160
 
 
 state 160
+
+   25 func_block: BLOCK commands RETURN expr SEMICOLON . KCOLB
+
+    KCOLB  shift, and go to state 161
+
+
+state 161
 
    25 func_block: BLOCK commands RETURN expr SEMICOLON KCOLB .
 

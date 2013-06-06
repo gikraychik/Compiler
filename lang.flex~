@@ -54,12 +54,20 @@ DELIM {WS}|[;]
 	"/"{WSN}				{ return DIV; }		
 	"->"{WSN}				{ return REF; }
 	":="{WSN}				{ return ASSIGN; }
-	","{WSN}				{ return COMA; }
-	":"{WSN}				{ /*printf("COLON"); */return COLON; }
+	","{WSN}				{ /*printf("COMA");*/ return COMA; }
+	":"{WSN}				{ /*printf("COLON");*/ return COLON; }
 	";"{WSN}				{ return SEMICOLON; }
 	"("{WSN}				{ return OBRACE; }
 	")"{WSN}				{ return CBRACE; }
-	{NAME}{WS}				{ yylval.string = strdup(yytext); /*printf("NAME");*/ return NAME; }				
+	{NAME}{WSN}				{ 
+							char *s = yytext;
+							while (1) {
+								if ((*yytext == ' ') || (*yytext == 0)) { break; }
+								yytext++;
+							}
+							*yytext = 0; yytext = s;
+							yylval.string = strdup(yytext); /*printf(yylval.string);*/ return NAME;
+						}
 }
 
 %%
