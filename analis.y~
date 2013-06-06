@@ -1,3 +1,17 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <map>
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<int> v;
+map<char *, char *> m;
+vector<char *> names;
+
 extern "C"
 {
 	int yyparse(void);
@@ -7,24 +21,76 @@ extern "C"
 		return 1;
 	}
 }
-%{
-#include <stdio.h>
-#include <string.h>
 void yyerror(const char *s)
 {
 	fprintf(stderr, "Unexpected error: %s\n", s);
 }
 
-int yywrap()
+/*int yywrap()
 {
 	return 1;
+}*/
+void move(char *name1, char *name2)
+{
+	cout << "MOVE " << name1 << ", " << name2 << endl;
 }
-
+void reverse(char s[])
+{
+	int i, j;
+	char c;
+	for (i = 0, j = strlen(s) - 1; i < j; i++, j--)
+	{
+		c = s[i]; s[i] = s[j]; s[j] = c;
+	}
+}
+char *itoa(int n)
+{
+	char *s = (char *)malloc(5*sizeof(char));
+	int i = 0;
+	do {
+	s[i++] = n % 10 + '0';
+	} while ((n /= 10) > 0);
+	s[i++] = 'a';
+	s[i] = '\0';
+	reverse(s);
+	return s;
+}
+char *get_name()
+{
+	v.back()++;
+	char *res = itoa(v.back());
+	return res;
+}
+char *match(const char *s)
+{
+	for (map<char *, char *>::iterator i = m.begin(); i != m.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
+int init_int(int value)
+{
+	char *s = get_name();
+	cout << "INTEGER " << s << ", " << value << endl;
+	return v.back();
+}
+int init_int(char *name)
+{
+	char *s = get_name();
+	cout << "INTEGER " << s << ", " << 0 << endl;
+	move(s, name);
+	return v.back();
+}
 int main()
 {
+	v.push_back(0);
 	yyparse();
 }
-
 %}
 
 %union
@@ -55,12 +121,36 @@ decl :		decl_func
 		| decl_label
 		;
 type :		STRING
+		{
+			cout << "STRING";
+		}
 		| INTEGER
+		{
+			cout << "INTEGER";
+		}
 		;
-decl_var :	namelist COLON type SEMICOLON
+decl_var :	namelist COLON STRING SEMICOLON
+		{
+
+		}
+		| namelist COLON INTEGER SEMICOLON
+		{
+			for (int i = 0; i < names.size(); i++)
+			{
+				m.insert(pair<char *, char *>(names[i], itoa(init_int(0))));
+				//m[names[i]] = itoa(init_int(0));
+			}
+			names.clear();
+		}
 		;
 namelist : 	namelist COMA NAME
+		{
+			names.push_back($3);
+		}
 		| NAME
+		{
+			names.push_back($1);
+		}
 		;
 decl_ref :	NAME REF NAME COLON type
 		;
@@ -82,6 +172,10 @@ action :	assign
 		| goto
 		;
 assign :	NAME ASSIGN expr SEMICOLON
+		{
+			//move(itoa(v.back()), m[$1]);
+			move($<string>3, match($1));
+		}
 		;
 io :		READ OBRACE NAME CBRACE SEMICOLON
 		| WRITE OBRACE NAME CBRACE SEMICOLON
@@ -91,19 +185,63 @@ goto : 		GOTO LABELNAME SEMICOLON
 		;
 expr : 		string_expr
 		| int_expr
+		{
+			$<string>$ = $<string>1;
+		}
 		| bool_expr
 		;
 int_expr :	int_expr ADD int_term
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "ADD	 " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+		}
 		| int_expr SUB int_term
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "SUB " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+		}
 		| int_term
+		{
+			$<string>$ = $<string>1;
+		}
 		;
 int_term :	int_term MUL int_factor
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "MUL " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+		}
 		| int_term DIV int_factor
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			cout << "DIV " << $<string>1 << ", " << $<number>3 << ", " << name << endl;	
+		}
 		| int_factor
+		{
+			$<string>$ = $<string>1;
+		}
 		;
 int_factor :	NUMBER
+		{
+			int num = init_int($1);
+			$<string>$ = itoa(num);
+		}
 		| NAME
+		{
+			$<string>$ = match($1);
+			cout << "Testing: " << match($1) << endl;
+		}
 		| OBRACE int_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
 		| NAME OBRACE act_params CBRACE
 		;
 act_params :	namelist COMA NAME

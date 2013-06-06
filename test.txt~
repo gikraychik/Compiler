@@ -1,1 +1,3 @@
-s :="abc" + "cda"+"ghy"+lol[3+2 -1];
+a, b, z: integer;
+z:= a*b;
+

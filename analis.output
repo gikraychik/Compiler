@@ -1,0 +1,1966 @@
+Terminals unused in grammar
+
+   DELIM
+   QUOTE
+
+
+State 1 conflicts: 1 shift/reduce
+State 28 conflicts: 1 reduce/reduce
+State 35 conflicts: 1 shift/reduce
+State 50 conflicts: 3 reduce/reduce
+State 59 conflicts: 1 shift/reduce
+State 110 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: /* empty */
+    2        | commands
+
+    3 commands: commands command
+    4         | command
+
+    5 command: decl
+    6        | action
+    7        | control
+
+    8 decl: decl_func
+    9     | decl_var
+   10     | decl_ref
+   11     | decl_label
+
+   12 type: STRING
+   13     | INTEGER
+
+   14 decl_var: namelist COLON STRING SEMICOLON
+   15         | namelist COLON INTEGER SEMICOLON
+
+   16 namelist: namelist COMA NAME
+   17         | NAME
+
+   18 decl_ref: NAME REF NAME COLON type
+
+   19 decl_label: LABEL LABELNAME SEMICOLON
+
+   20 decl_func: NAME COLON type OBRACE chain_param CBRACE func_block
+
+   21 chain_param: decl_list namelist COLON type
+
+   22 decl_list: decl_list decl_var
+   23          | decl_var
+
+   24 block: BLOCK commands KCOLB
+
+   25 func_block: BLOCK commands RETURN expr SEMICOLON KCOLB
+
+   26 action: assign
+   27       | io
+   28       | goto
+
+   29 assign: NAME ASSIGN expr SEMICOLON
+
+   30 io: READ OBRACE NAME CBRACE SEMICOLON
+   31   | WRITE OBRACE NAME CBRACE SEMICOLON
+   32   | WRITE OBRACE NUMBER CBRACE SEMICOLON
+
+   33 goto: GOTO LABELNAME SEMICOLON
+
+   34 expr: string_expr
+   35     | int_expr
+   36     | bool_expr
+
+   37 int_expr: int_expr ADD int_term
+   38         | int_expr SUB int_term
+   39         | int_term
+
+   40 int_term: int_term MUL int_factor
+   41         | int_term DIV int_factor
+   42         | int_factor
+
+   43 int_factor: NUMBER
+   44           | NAME
+   45           | OBRACE int_expr CBRACE
+   46           | NAME OBRACE act_params CBRACE
+
+   47 act_params: namelist COMA NAME
+   48           | namelist COMA NUMBER
+   49           | namelist COMA STRING
+   50           | NAME
+   51           | NUMBER
+   52           | STRING
+
+   53 bool_expr: bool_expr OR bool_term
+   54          | bool_term
+
+   55 bool_term: bool_term AND bool_factor
+   56          | bool_factor
+
+   57 bool_factor: OBRACE bool_expr CBRACE
+   58            | int_expr LT int_expr
+   59            | int_expr LE int_expr
+   60            | int_expr GT int_expr
+   61            | int_expr GE int_expr
+   62            | int_expr EQ int_expr
+   63            | int_expr NE int_expr
+   64            | NAME
+   65            | NOT bool_expr
+
+   66 string_expr: string_expr ADD string_factor
+   67            | string_factor
+
+   68 string_factor: OBRACE string_factor CBRACE
+   69              | STRINGCONST
+   70              | STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE
+   71              | NAME
+   72              | NAME RECOPENBRACE int_expr RECCLOSEBRACE
+
+   73 control: cond
+   74        | cycle
+
+   75 cond: IF bool_expr THEN block ELSE block
+
+   76 cycle: WHILE bool_expr LOOP commands POOL
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+NUMBER (258) 32 43 48 51
+NAME (259) 16 17 18 20 29 30 31 44 46 47 50 64 71 72
+LABELNAME (260) 19 33
+REF (261) 18
+COLON (262) 14 15 18 20 21
+SEMICOLON (263) 14 15 19 25 29 30 31 32 33
+DELIM (264)
+STRINGCONST (265) 69 70
+QUOTE (266)
+STRING (267) 12 14 49 52
+INTEGER (268) 13 15
+COMA (269) 16 47 48 49
+RETURN (270) 25
+ASSIGN (271) 29
+LT (272) 58
+LE (273) 59
+GT (274) 60
+GE (275) 61
+EQ (276) 62
+NE (277) 63
+OR (278) 53
+AND (279) 55
+NOT (280) 65
+IF (281) 75
+WHILE (282) 76
+LOOP (283) 76
+POOL (284) 76
+READ (285) 30
+WRITE (286) 31 32
+LABEL (287) 19
+RECOPENBRACE (288) 70 72
+RECCLOSEBRACE (289) 70 72
+BLOCK (290) 24 25
+KCOLB (291) 24 25
+THEN (292) 75
+ELSE (293) 75
+GOTO (294) 33
+ADD (295) 37 66
+SUB (296) 38
+MUL (297) 40
+DIV (298) 41
+OBRACE (299) 20 30 31 32 45 46 57 68
+CBRACE (300) 20 30 31 32 45 46 57 68
+
+
+Nonterminals, with rules where they appear
+
+$accept (46)
+    on left: 0
+program (47)
+    on left: 1 2, on right: 0
+commands (48)
+    on left: 3 4, on right: 2 3 24 25 76
+command (49)
+    on left: 5 6 7, on right: 3 4
+decl (50)
+    on left: 8 9 10 11, on right: 5
+type (51)
+    on left: 12 13, on right: 18 20 21
+decl_var (52)
+    on left: 14 15, on right: 9 22 23
+namelist (53)
+    on left: 16 17, on right: 14 15 16 21 47 48 49
+decl_ref (54)
+    on left: 18, on right: 10
+decl_label (55)
+    on left: 19, on right: 11
+decl_func (56)
+    on left: 20, on right: 8
+chain_param (57)
+    on left: 21, on right: 20
+decl_list (58)
+    on left: 22 23, on right: 21 22
+block (59)
+    on left: 24, on right: 75
+func_block (60)
+    on left: 25, on right: 20
+action (61)
+    on left: 26 27 28, on right: 6
+assign (62)
+    on left: 29, on right: 26
+io (63)
+    on left: 30 31 32, on right: 27
+goto (64)
+    on left: 33, on right: 28
+expr (65)
+    on left: 34 35 36, on right: 25 29
+int_expr (66)
+    on left: 37 38 39, on right: 35 37 38 45 58 59 60 61 62 63 70 72
+int_term (67)
+    on left: 40 41 42, on right: 37 38 39 40 41
+int_factor (68)
+    on left: 43 44 45 46, on right: 40 41 42
+act_params (69)
+    on left: 47 48 49 50 51 52, on right: 46
+bool_expr (70)
+    on left: 53 54, on right: 36 53 57 65 75 76
+bool_term (71)
+    on left: 55 56, on right: 53 54 55
+bool_factor (72)
+    on left: 57 58 59 60 61 62 63 64 65, on right: 55 56
+string_expr (73)
+    on left: 66 67, on right: 34 66
+string_factor (74)
+    on left: 68 69 70 71 72, on right: 66 67 68
+control (75)
+    on left: 73 74, on right: 7
+cond (76)
+    on left: 75, on right: 73
+cycle (77)
+    on left: 76, on right: 74
+
+
+state 0
+
+    0 $accept: . program $end
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    $default  reduce using rule 1 (program)
+
+    program     go to state 8
+    commands    go to state 9
+    command     go to state 10
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 1
+
+   17 namelist: NAME .
+   18 decl_ref: NAME . REF NAME COLON type
+   20 decl_func: NAME . COLON type OBRACE chain_param CBRACE func_block
+   29 assign: NAME . ASSIGN expr SEMICOLON
+
+    REF     shift, and go to state 24
+    COLON   shift, and go to state 25
+    ASSIGN  shift, and go to state 26
+
+    COLON     [reduce using rule 17 (namelist)]
+    $default  reduce using rule 17 (namelist)
+
+
+state 2
+
+   75 cond: IF . bool_expr THEN block ELSE block
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 31
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_expr    go to state 34
+    bool_term    go to state 35
+    bool_factor  go to state 36
+
+
+state 3
+
+   76 cycle: WHILE . bool_expr LOOP commands POOL
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 31
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_expr    go to state 37
+    bool_term    go to state 35
+    bool_factor  go to state 36
+
+
+state 4
+
+   30 io: READ . OBRACE NAME CBRACE SEMICOLON
+
+    OBRACE  shift, and go to state 38
+
+
+state 5
+
+   31 io: WRITE . OBRACE NAME CBRACE SEMICOLON
+   32   | WRITE . OBRACE NUMBER CBRACE SEMICOLON
+
+    OBRACE  shift, and go to state 39
+
+
+state 6
+
+   19 decl_label: LABEL . LABELNAME SEMICOLON
+
+    LABELNAME  shift, and go to state 40
+
+
+state 7
+
+   33 goto: GOTO . LABELNAME SEMICOLON
+
+    LABELNAME  shift, and go to state 41
+
+
+state 8
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 42
+
+
+state 9
+
+    2 program: commands .
+    3 commands: commands . command
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    $default  reduce using rule 2 (program)
+
+    command     go to state 43
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 10
+
+    4 commands: command .
+
+    $default  reduce using rule 4 (commands)
+
+
+state 11
+
+    5 command: decl .
+
+    $default  reduce using rule 5 (command)
+
+
+state 12
+
+    9 decl: decl_var .
+
+    $default  reduce using rule 9 (decl)
+
+
+state 13
+
+   14 decl_var: namelist . COLON STRING SEMICOLON
+   15         | namelist . COLON INTEGER SEMICOLON
+   16 namelist: namelist . COMA NAME
+
+    COLON  shift, and go to state 44
+    COMA   shift, and go to state 45
+
+
+state 14
+
+   10 decl: decl_ref .
+
+    $default  reduce using rule 10 (decl)
+
+
+state 15
+
+   11 decl: decl_label .
+
+    $default  reduce using rule 11 (decl)
+
+
+state 16
+
+    8 decl: decl_func .
+
+    $default  reduce using rule 8 (decl)
+
+
+state 17
+
+    6 command: action .
+
+    $default  reduce using rule 6 (command)
+
+
+state 18
+
+   26 action: assign .
+
+    $default  reduce using rule 26 (action)
+
+
+state 19
+
+   27 action: io .
+
+    $default  reduce using rule 27 (action)
+
+
+state 20
+
+   28 action: goto .
+
+    $default  reduce using rule 28 (action)
+
+
+state 21
+
+    7 command: control .
+
+    $default  reduce using rule 7 (command)
+
+
+state 22
+
+   73 control: cond .
+
+    $default  reduce using rule 73 (control)
+
+
+state 23
+
+   74 control: cycle .
+
+    $default  reduce using rule 74 (control)
+
+
+state 24
+
+   18 decl_ref: NAME REF . NAME COLON type
+
+    NAME  shift, and go to state 46
+
+
+state 25
+
+   20 decl_func: NAME COLON . type OBRACE chain_param CBRACE func_block
+
+    STRING   shift, and go to state 47
+    INTEGER  shift, and go to state 48
+
+    type  go to state 49
+
+
+state 26
+
+   29 assign: NAME ASSIGN . expr SEMICOLON
+
+    NUMBER       shift, and go to state 27
+    NAME         shift, and go to state 50
+    STRINGCONST  shift, and go to state 51
+    NOT          shift, and go to state 29
+    OBRACE       shift, and go to state 52
+
+    expr           go to state 53
+    int_expr       go to state 54
+    int_term       go to state 32
+    int_factor     go to state 33
+    bool_expr      go to state 55
+    bool_term      go to state 35
+    bool_factor    go to state 36
+    string_expr    go to state 56
+    string_factor  go to state 57
+
+
+state 27
+
+   43 int_factor: NUMBER .
+
+    $default  reduce using rule 43 (int_factor)
+
+
+state 28
+
+   44 int_factor: NAME .
+   46           | NAME . OBRACE act_params CBRACE
+   64 bool_factor: NAME .
+
+    OBRACE  shift, and go to state 58
+
+    SEMICOLON  reduce using rule 64 (bool_factor)
+    OR         reduce using rule 64 (bool_factor)
+    AND        reduce using rule 64 (bool_factor)
+    LOOP       reduce using rule 64 (bool_factor)
+    THEN       reduce using rule 64 (bool_factor)
+    CBRACE     reduce using rule 44 (int_factor)
+    CBRACE     [reduce using rule 64 (bool_factor)]
+    $default   reduce using rule 44 (int_factor)
+
+
+state 29
+
+   65 bool_factor: NOT . bool_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 31
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_expr    go to state 59
+    bool_term    go to state 35
+    bool_factor  go to state 36
+
+
+state 30
+
+   45 int_factor: OBRACE . int_expr CBRACE
+   57 bool_factor: OBRACE . bool_expr CBRACE
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 60
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_expr    go to state 61
+    bool_term    go to state 35
+    bool_factor  go to state 36
+
+
+state 31
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   58 bool_factor: int_expr . LT int_expr
+   59            | int_expr . LE int_expr
+   60            | int_expr . GT int_expr
+   61            | int_expr . GE int_expr
+   62            | int_expr . EQ int_expr
+   63            | int_expr . NE int_expr
+
+    LT   shift, and go to state 62
+    LE   shift, and go to state 63
+    GT   shift, and go to state 64
+    GE   shift, and go to state 65
+    EQ   shift, and go to state 66
+    NE   shift, and go to state 67
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+
+state 32
+
+   39 int_expr: int_term .
+   40 int_term: int_term . MUL int_factor
+   41         | int_term . DIV int_factor
+
+    MUL  shift, and go to state 70
+    DIV  shift, and go to state 71
+
+    $default  reduce using rule 39 (int_expr)
+
+
+state 33
+
+   42 int_term: int_factor .
+
+    $default  reduce using rule 42 (int_term)
+
+
+state 34
+
+   53 bool_expr: bool_expr . OR bool_term
+   75 cond: IF bool_expr . THEN block ELSE block
+
+    OR    shift, and go to state 72
+    THEN  shift, and go to state 73
+
+
+state 35
+
+   54 bool_expr: bool_term .
+   55 bool_term: bool_term . AND bool_factor
+
+    AND  shift, and go to state 74
+
+    AND       [reduce using rule 54 (bool_expr)]
+    $default  reduce using rule 54 (bool_expr)
+
+
+state 36
+
+   56 bool_term: bool_factor .
+
+    $default  reduce using rule 56 (bool_term)
+
+
+state 37
+
+   53 bool_expr: bool_expr . OR bool_term
+   76 cycle: WHILE bool_expr . LOOP commands POOL
+
+    OR    shift, and go to state 72
+    LOOP  shift, and go to state 75
+
+
+state 38
+
+   30 io: READ OBRACE . NAME CBRACE SEMICOLON
+
+    NAME  shift, and go to state 76
+
+
+state 39
+
+   31 io: WRITE OBRACE . NAME CBRACE SEMICOLON
+   32   | WRITE OBRACE . NUMBER CBRACE SEMICOLON
+
+    NUMBER  shift, and go to state 77
+    NAME    shift, and go to state 78
+
+
+state 40
+
+   19 decl_label: LABEL LABELNAME . SEMICOLON
+
+    SEMICOLON  shift, and go to state 79
+
+
+state 41
+
+   33 goto: GOTO LABELNAME . SEMICOLON
+
+    SEMICOLON  shift, and go to state 80
+
+
+state 42
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 43
+
+    3 commands: commands command .
+
+    $default  reduce using rule 3 (commands)
+
+
+state 44
+
+   14 decl_var: namelist COLON . STRING SEMICOLON
+   15         | namelist COLON . INTEGER SEMICOLON
+
+    STRING   shift, and go to state 81
+    INTEGER  shift, and go to state 82
+
+
+state 45
+
+   16 namelist: namelist COMA . NAME
+
+    NAME  shift, and go to state 83
+
+
+state 46
+
+   18 decl_ref: NAME REF NAME . COLON type
+
+    COLON  shift, and go to state 84
+
+
+state 47
+
+   12 type: STRING .
+
+    $default  reduce using rule 12 (type)
+
+
+state 48
+
+   13 type: INTEGER .
+
+    $default  reduce using rule 13 (type)
+
+
+state 49
+
+   20 decl_func: NAME COLON type . OBRACE chain_param CBRACE func_block
+
+    OBRACE  shift, and go to state 85
+
+
+state 50
+
+   44 int_factor: NAME .
+   46           | NAME . OBRACE act_params CBRACE
+   64 bool_factor: NAME .
+   71 string_factor: NAME .
+   72              | NAME . RECOPENBRACE int_expr RECCLOSEBRACE
+
+    RECOPENBRACE  shift, and go to state 86
+    OBRACE        shift, and go to state 58
+
+    SEMICOLON  reduce using rule 44 (int_factor)
+    SEMICOLON  [reduce using rule 64 (bool_factor)]
+    SEMICOLON  [reduce using rule 71 (string_factor)]
+    OR         reduce using rule 64 (bool_factor)
+    AND        reduce using rule 64 (bool_factor)
+    ADD        reduce using rule 44 (int_factor)
+    ADD        [reduce using rule 71 (string_factor)]
+    CBRACE     reduce using rule 44 (int_factor)
+    CBRACE     [reduce using rule 64 (bool_factor)]
+    CBRACE     [reduce using rule 71 (string_factor)]
+    $default   reduce using rule 44 (int_factor)
+
+
+state 51
+
+   69 string_factor: STRINGCONST .
+   70              | STRINGCONST . RECOPENBRACE int_expr RECCLOSEBRACE
+
+    RECOPENBRACE  shift, and go to state 87
+
+    $default  reduce using rule 69 (string_factor)
+
+
+state 52
+
+   45 int_factor: OBRACE . int_expr CBRACE
+   57 bool_factor: OBRACE . bool_expr CBRACE
+   68 string_factor: OBRACE . string_factor CBRACE
+
+    NUMBER       shift, and go to state 27
+    NAME         shift, and go to state 50
+    STRINGCONST  shift, and go to state 51
+    NOT          shift, and go to state 29
+    OBRACE       shift, and go to state 52
+
+    int_expr       go to state 60
+    int_term       go to state 32
+    int_factor     go to state 33
+    bool_expr      go to state 61
+    bool_term      go to state 35
+    bool_factor    go to state 36
+    string_factor  go to state 88
+
+
+state 53
+
+   29 assign: NAME ASSIGN expr . SEMICOLON
+
+    SEMICOLON  shift, and go to state 89
+
+
+state 54
+
+   35 expr: int_expr .
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   58 bool_factor: int_expr . LT int_expr
+   59            | int_expr . LE int_expr
+   60            | int_expr . GT int_expr
+   61            | int_expr . GE int_expr
+   62            | int_expr . EQ int_expr
+   63            | int_expr . NE int_expr
+
+    LT   shift, and go to state 62
+    LE   shift, and go to state 63
+    GT   shift, and go to state 64
+    GE   shift, and go to state 65
+    EQ   shift, and go to state 66
+    NE   shift, and go to state 67
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 35 (expr)
+
+
+state 55
+
+   36 expr: bool_expr .
+   53 bool_expr: bool_expr . OR bool_term
+
+    OR  shift, and go to state 72
+
+    $default  reduce using rule 36 (expr)
+
+
+state 56
+
+   34 expr: string_expr .
+   66 string_expr: string_expr . ADD string_factor
+
+    ADD  shift, and go to state 90
+
+    $default  reduce using rule 34 (expr)
+
+
+state 57
+
+   67 string_expr: string_factor .
+
+    $default  reduce using rule 67 (string_expr)
+
+
+state 58
+
+   46 int_factor: NAME OBRACE . act_params CBRACE
+
+    NUMBER  shift, and go to state 91
+    NAME    shift, and go to state 92
+    STRING  shift, and go to state 93
+
+    namelist    go to state 94
+    act_params  go to state 95
+
+
+state 59
+
+   53 bool_expr: bool_expr . OR bool_term
+   65 bool_factor: NOT bool_expr .
+
+    OR  shift, and go to state 72
+
+    OR        [reduce using rule 65 (bool_factor)]
+    $default  reduce using rule 65 (bool_factor)
+
+
+state 60
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   45 int_factor: OBRACE int_expr . CBRACE
+   58 bool_factor: int_expr . LT int_expr
+   59            | int_expr . LE int_expr
+   60            | int_expr . GT int_expr
+   61            | int_expr . GE int_expr
+   62            | int_expr . EQ int_expr
+   63            | int_expr . NE int_expr
+
+    LT      shift, and go to state 62
+    LE      shift, and go to state 63
+    GT      shift, and go to state 64
+    GE      shift, and go to state 65
+    EQ      shift, and go to state 66
+    NE      shift, and go to state 67
+    ADD     shift, and go to state 68
+    SUB     shift, and go to state 69
+    CBRACE  shift, and go to state 96
+
+
+state 61
+
+   53 bool_expr: bool_expr . OR bool_term
+   57 bool_factor: OBRACE bool_expr . CBRACE
+
+    OR      shift, and go to state 72
+    CBRACE  shift, and go to state 97
+
+
+state 62
+
+   58 bool_factor: int_expr LT . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 100
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 63
+
+   59 bool_factor: int_expr LE . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 101
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 64
+
+   60 bool_factor: int_expr GT . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 102
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 65
+
+   61 bool_factor: int_expr GE . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 103
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 66
+
+   62 bool_factor: int_expr EQ . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 104
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 67
+
+   63 bool_factor: int_expr NE . int_expr
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 105
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 68
+
+   37 int_expr: int_expr ADD . int_term
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_term    go to state 106
+    int_factor  go to state 33
+
+
+state 69
+
+   38 int_expr: int_expr SUB . int_term
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_term    go to state 107
+    int_factor  go to state 33
+
+
+state 70
+
+   40 int_term: int_term MUL . int_factor
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_factor  go to state 108
+
+
+state 71
+
+   41 int_term: int_term DIV . int_factor
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_factor  go to state 109
+
+
+state 72
+
+   53 bool_expr: bool_expr OR . bool_term
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 31
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_term    go to state 110
+    bool_factor  go to state 36
+
+
+state 73
+
+   75 cond: IF bool_expr THEN . block ELSE block
+
+    BLOCK  shift, and go to state 111
+
+    block  go to state 112
+
+
+state 74
+
+   55 bool_term: bool_term AND . bool_factor
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 28
+    NOT     shift, and go to state 29
+    OBRACE  shift, and go to state 30
+
+    int_expr     go to state 31
+    int_term     go to state 32
+    int_factor   go to state 33
+    bool_factor  go to state 113
+
+
+state 75
+
+   76 cycle: WHILE bool_expr LOOP . commands POOL
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    commands    go to state 114
+    command     go to state 10
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 76
+
+   30 io: READ OBRACE NAME . CBRACE SEMICOLON
+
+    CBRACE  shift, and go to state 115
+
+
+state 77
+
+   32 io: WRITE OBRACE NUMBER . CBRACE SEMICOLON
+
+    CBRACE  shift, and go to state 116
+
+
+state 78
+
+   31 io: WRITE OBRACE NAME . CBRACE SEMICOLON
+
+    CBRACE  shift, and go to state 117
+
+
+state 79
+
+   19 decl_label: LABEL LABELNAME SEMICOLON .
+
+    $default  reduce using rule 19 (decl_label)
+
+
+state 80
+
+   33 goto: GOTO LABELNAME SEMICOLON .
+
+    $default  reduce using rule 33 (goto)
+
+
+state 81
+
+   14 decl_var: namelist COLON STRING . SEMICOLON
+
+    SEMICOLON  shift, and go to state 118
+
+
+state 82
+
+   15 decl_var: namelist COLON INTEGER . SEMICOLON
+
+    SEMICOLON  shift, and go to state 119
+
+
+state 83
+
+   16 namelist: namelist COMA NAME .
+
+    $default  reduce using rule 16 (namelist)
+
+
+state 84
+
+   18 decl_ref: NAME REF NAME COLON . type
+
+    STRING   shift, and go to state 47
+    INTEGER  shift, and go to state 48
+
+    type  go to state 120
+
+
+state 85
+
+   20 decl_func: NAME COLON type OBRACE . chain_param CBRACE func_block
+
+    NAME  shift, and go to state 121
+
+    decl_var     go to state 122
+    namelist     go to state 13
+    chain_param  go to state 123
+    decl_list    go to state 124
+
+
+state 86
+
+   72 string_factor: NAME RECOPENBRACE . int_expr RECCLOSEBRACE
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 125
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 87
+
+   70 string_factor: STRINGCONST RECOPENBRACE . int_expr RECCLOSEBRACE
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 126
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 88
+
+   68 string_factor: OBRACE string_factor . CBRACE
+
+    CBRACE  shift, and go to state 127
+
+
+state 89
+
+   29 assign: NAME ASSIGN expr SEMICOLON .
+
+    $default  reduce using rule 29 (assign)
+
+
+state 90
+
+   66 string_expr: string_expr ADD . string_factor
+
+    NAME         shift, and go to state 128
+    STRINGCONST  shift, and go to state 51
+    OBRACE       shift, and go to state 129
+
+    string_factor  go to state 130
+
+
+state 91
+
+   51 act_params: NUMBER .
+
+    $default  reduce using rule 51 (act_params)
+
+
+state 92
+
+   17 namelist: NAME .
+   50 act_params: NAME .
+
+    CBRACE    reduce using rule 50 (act_params)
+    $default  reduce using rule 17 (namelist)
+
+
+state 93
+
+   52 act_params: STRING .
+
+    $default  reduce using rule 52 (act_params)
+
+
+state 94
+
+   16 namelist: namelist . COMA NAME
+   47 act_params: namelist . COMA NAME
+   48           | namelist . COMA NUMBER
+   49           | namelist . COMA STRING
+
+    COMA  shift, and go to state 131
+
+
+state 95
+
+   46 int_factor: NAME OBRACE act_params . CBRACE
+
+    CBRACE  shift, and go to state 132
+
+
+state 96
+
+   45 int_factor: OBRACE int_expr CBRACE .
+
+    $default  reduce using rule 45 (int_factor)
+
+
+state 97
+
+   57 bool_factor: OBRACE bool_expr CBRACE .
+
+    $default  reduce using rule 57 (bool_factor)
+
+
+state 98
+
+   44 int_factor: NAME .
+   46           | NAME . OBRACE act_params CBRACE
+
+    OBRACE  shift, and go to state 58
+
+    $default  reduce using rule 44 (int_factor)
+
+
+state 99
+
+   45 int_factor: OBRACE . int_expr CBRACE
+
+    NUMBER  shift, and go to state 27
+    NAME    shift, and go to state 98
+    OBRACE  shift, and go to state 99
+
+    int_expr    go to state 133
+    int_term    go to state 32
+    int_factor  go to state 33
+
+
+state 100
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   58 bool_factor: int_expr LT int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 58 (bool_factor)
+
+
+state 101
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   59 bool_factor: int_expr LE int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 59 (bool_factor)
+
+
+state 102
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   60 bool_factor: int_expr GT int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 60 (bool_factor)
+
+
+state 103
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   61 bool_factor: int_expr GE int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 61 (bool_factor)
+
+
+state 104
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   62 bool_factor: int_expr EQ int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 62 (bool_factor)
+
+
+state 105
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   63 bool_factor: int_expr NE int_expr .
+
+    ADD  shift, and go to state 68
+    SUB  shift, and go to state 69
+
+    $default  reduce using rule 63 (bool_factor)
+
+
+state 106
+
+   37 int_expr: int_expr ADD int_term .
+   40 int_term: int_term . MUL int_factor
+   41         | int_term . DIV int_factor
+
+    MUL  shift, and go to state 70
+    DIV  shift, and go to state 71
+
+    $default  reduce using rule 37 (int_expr)
+
+
+state 107
+
+   38 int_expr: int_expr SUB int_term .
+   40 int_term: int_term . MUL int_factor
+   41         | int_term . DIV int_factor
+
+    MUL  shift, and go to state 70
+    DIV  shift, and go to state 71
+
+    $default  reduce using rule 38 (int_expr)
+
+
+state 108
+
+   40 int_term: int_term MUL int_factor .
+
+    $default  reduce using rule 40 (int_term)
+
+
+state 109
+
+   41 int_term: int_term DIV int_factor .
+
+    $default  reduce using rule 41 (int_term)
+
+
+state 110
+
+   53 bool_expr: bool_expr OR bool_term .
+   55 bool_term: bool_term . AND bool_factor
+
+    AND  shift, and go to state 74
+
+    AND       [reduce using rule 53 (bool_expr)]
+    $default  reduce using rule 53 (bool_expr)
+
+
+state 111
+
+   24 block: BLOCK . commands KCOLB
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    commands    go to state 134
+    command     go to state 10
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 112
+
+   75 cond: IF bool_expr THEN block . ELSE block
+
+    ELSE  shift, and go to state 135
+
+
+state 113
+
+   55 bool_term: bool_term AND bool_factor .
+
+    $default  reduce using rule 55 (bool_term)
+
+
+state 114
+
+    3 commands: commands . command
+   76 cycle: WHILE bool_expr LOOP commands . POOL
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    POOL   shift, and go to state 136
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    command     go to state 43
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 115
+
+   30 io: READ OBRACE NAME CBRACE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 137
+
+
+state 116
+
+   32 io: WRITE OBRACE NUMBER CBRACE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 138
+
+
+state 117
+
+   31 io: WRITE OBRACE NAME CBRACE . SEMICOLON
+
+    SEMICOLON  shift, and go to state 139
+
+
+state 118
+
+   14 decl_var: namelist COLON STRING SEMICOLON .
+
+    $default  reduce using rule 14 (decl_var)
+
+
+state 119
+
+   15 decl_var: namelist COLON INTEGER SEMICOLON .
+
+    $default  reduce using rule 15 (decl_var)
+
+
+state 120
+
+   18 decl_ref: NAME REF NAME COLON type .
+
+    $default  reduce using rule 18 (decl_ref)
+
+
+state 121
+
+   17 namelist: NAME .
+
+    $default  reduce using rule 17 (namelist)
+
+
+state 122
+
+   23 decl_list: decl_var .
+
+    $default  reduce using rule 23 (decl_list)
+
+
+state 123
+
+   20 decl_func: NAME COLON type OBRACE chain_param . CBRACE func_block
+
+    CBRACE  shift, and go to state 140
+
+
+state 124
+
+   21 chain_param: decl_list . namelist COLON type
+   22 decl_list: decl_list . decl_var
+
+    NAME  shift, and go to state 121
+
+    decl_var  go to state 141
+    namelist  go to state 142
+
+
+state 125
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   72 string_factor: NAME RECOPENBRACE int_expr . RECCLOSEBRACE
+
+    RECCLOSEBRACE  shift, and go to state 143
+    ADD            shift, and go to state 68
+    SUB            shift, and go to state 69
+
+
+state 126
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   70 string_factor: STRINGCONST RECOPENBRACE int_expr . RECCLOSEBRACE
+
+    RECCLOSEBRACE  shift, and go to state 144
+    ADD            shift, and go to state 68
+    SUB            shift, and go to state 69
+
+
+state 127
+
+   68 string_factor: OBRACE string_factor CBRACE .
+
+    $default  reduce using rule 68 (string_factor)
+
+
+state 128
+
+   71 string_factor: NAME .
+   72              | NAME . RECOPENBRACE int_expr RECCLOSEBRACE
+
+    RECOPENBRACE  shift, and go to state 86
+
+    $default  reduce using rule 71 (string_factor)
+
+
+state 129
+
+   68 string_factor: OBRACE . string_factor CBRACE
+
+    NAME         shift, and go to state 128
+    STRINGCONST  shift, and go to state 51
+    OBRACE       shift, and go to state 129
+
+    string_factor  go to state 88
+
+
+state 130
+
+   66 string_expr: string_expr ADD string_factor .
+
+    $default  reduce using rule 66 (string_expr)
+
+
+state 131
+
+   16 namelist: namelist COMA . NAME
+   47 act_params: namelist COMA . NAME
+   48           | namelist COMA . NUMBER
+   49           | namelist COMA . STRING
+
+    NUMBER  shift, and go to state 145
+    NAME    shift, and go to state 146
+    STRING  shift, and go to state 147
+
+
+state 132
+
+   46 int_factor: NAME OBRACE act_params CBRACE .
+
+    $default  reduce using rule 46 (int_factor)
+
+
+state 133
+
+   37 int_expr: int_expr . ADD int_term
+   38         | int_expr . SUB int_term
+   45 int_factor: OBRACE int_expr . CBRACE
+
+    ADD     shift, and go to state 68
+    SUB     shift, and go to state 69
+    CBRACE  shift, and go to state 96
+
+
+state 134
+
+    3 commands: commands . command
+   24 block: BLOCK commands . KCOLB
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    KCOLB  shift, and go to state 148
+    GOTO   shift, and go to state 7
+
+    command     go to state 43
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 135
+
+   75 cond: IF bool_expr THEN block ELSE . block
+
+    BLOCK  shift, and go to state 111
+
+    block  go to state 149
+
+
+state 136
+
+   76 cycle: WHILE bool_expr LOOP commands POOL .
+
+    $default  reduce using rule 76 (cycle)
+
+
+state 137
+
+   30 io: READ OBRACE NAME CBRACE SEMICOLON .
+
+    $default  reduce using rule 30 (io)
+
+
+state 138
+
+   32 io: WRITE OBRACE NUMBER CBRACE SEMICOLON .
+
+    $default  reduce using rule 32 (io)
+
+
+state 139
+
+   31 io: WRITE OBRACE NAME CBRACE SEMICOLON .
+
+    $default  reduce using rule 31 (io)
+
+
+state 140
+
+   20 decl_func: NAME COLON type OBRACE chain_param CBRACE . func_block
+
+    BLOCK  shift, and go to state 150
+
+    func_block  go to state 151
+
+
+state 141
+
+   22 decl_list: decl_list decl_var .
+
+    $default  reduce using rule 22 (decl_list)
+
+
+state 142
+
+   14 decl_var: namelist . COLON STRING SEMICOLON
+   15         | namelist . COLON INTEGER SEMICOLON
+   16 namelist: namelist . COMA NAME
+   21 chain_param: decl_list namelist . COLON type
+
+    COLON  shift, and go to state 152
+    COMA   shift, and go to state 45
+
+
+state 143
+
+   72 string_factor: NAME RECOPENBRACE int_expr RECCLOSEBRACE .
+
+    $default  reduce using rule 72 (string_factor)
+
+
+state 144
+
+   70 string_factor: STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE .
+
+    $default  reduce using rule 70 (string_factor)
+
+
+state 145
+
+   48 act_params: namelist COMA NUMBER .
+
+    $default  reduce using rule 48 (act_params)
+
+
+state 146
+
+   16 namelist: namelist COMA NAME .
+   47 act_params: namelist COMA NAME .
+
+    CBRACE    reduce using rule 47 (act_params)
+    $default  reduce using rule 16 (namelist)
+
+
+state 147
+
+   49 act_params: namelist COMA STRING .
+
+    $default  reduce using rule 49 (act_params)
+
+
+state 148
+
+   24 block: BLOCK commands KCOLB .
+
+    $default  reduce using rule 24 (block)
+
+
+state 149
+
+   75 cond: IF bool_expr THEN block ELSE block .
+
+    $default  reduce using rule 75 (cond)
+
+
+state 150
+
+   25 func_block: BLOCK . commands RETURN expr SEMICOLON KCOLB
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    WHILE  shift, and go to state 3
+    READ   shift, and go to state 4
+    WRITE  shift, and go to state 5
+    LABEL  shift, and go to state 6
+    GOTO   shift, and go to state 7
+
+    commands    go to state 153
+    command     go to state 10
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 151
+
+   20 decl_func: NAME COLON type OBRACE chain_param CBRACE func_block .
+
+    $default  reduce using rule 20 (decl_func)
+
+
+state 152
+
+   14 decl_var: namelist COLON . STRING SEMICOLON
+   15         | namelist COLON . INTEGER SEMICOLON
+   21 chain_param: decl_list namelist COLON . type
+
+    STRING   shift, and go to state 154
+    INTEGER  shift, and go to state 155
+
+    type  go to state 156
+
+
+state 153
+
+    3 commands: commands . command
+   25 func_block: BLOCK commands . RETURN expr SEMICOLON KCOLB
+
+    NAME    shift, and go to state 1
+    RETURN  shift, and go to state 157
+    IF      shift, and go to state 2
+    WHILE   shift, and go to state 3
+    READ    shift, and go to state 4
+    WRITE   shift, and go to state 5
+    LABEL   shift, and go to state 6
+    GOTO    shift, and go to state 7
+
+    command     go to state 43
+    decl        go to state 11
+    decl_var    go to state 12
+    namelist    go to state 13
+    decl_ref    go to state 14
+    decl_label  go to state 15
+    decl_func   go to state 16
+    action      go to state 17
+    assign      go to state 18
+    io          go to state 19
+    goto        go to state 20
+    control     go to state 21
+    cond        go to state 22
+    cycle       go to state 23
+
+
+state 154
+
+   12 type: STRING .
+   14 decl_var: namelist COLON STRING . SEMICOLON
+
+    SEMICOLON  shift, and go to state 118
+
+    $default  reduce using rule 12 (type)
+
+
+state 155
+
+   13 type: INTEGER .
+   15 decl_var: namelist COLON INTEGER . SEMICOLON
+
+    SEMICOLON  shift, and go to state 119
+
+    $default  reduce using rule 13 (type)
+
+
+state 156
+
+   21 chain_param: decl_list namelist COLON type .
+
+    $default  reduce using rule 21 (chain_param)
+
+
+state 157
+
+   25 func_block: BLOCK commands RETURN . expr SEMICOLON KCOLB
+
+    NUMBER       shift, and go to state 27
+    NAME         shift, and go to state 50
+    STRINGCONST  shift, and go to state 51
+    NOT          shift, and go to state 29
+    OBRACE       shift, and go to state 52
+
+    expr           go to state 158
+    int_expr       go to state 54
+    int_term       go to state 32
+    int_factor     go to state 33
+    bool_expr      go to state 55
+    bool_term      go to state 35
+    bool_factor    go to state 36
+    string_expr    go to state 56
+    string_factor  go to state 57
+
+
+state 158
+
+   25 func_block: BLOCK commands RETURN expr . SEMICOLON KCOLB
+
+    SEMICOLON  shift, and go to state 159
+
+
+state 159
+
+   25 func_block: BLOCK commands RETURN expr SEMICOLON . KCOLB
+
+    KCOLB  shift, and go to state 160
+
+
+state 160
+
+   25 func_block: BLOCK commands RETURN expr SEMICOLON KCOLB .
+
+    $default  reduce using rule 25 (func_block)

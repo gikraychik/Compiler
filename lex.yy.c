@@ -388,10 +388,10 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_accept[139] =
     {   0,
         0,    0,   42,   41,   28,   41,   41,   38,   39,   31,
-       29,   37,   30,   32,    1,   35,   36,   20,   41,   22,
+       29,   35,   30,   32,    1,   36,   37,   20,   41,   22,
        40,   18,   19,   40,   40,   40,   40,   40,   40,   40,
        40,   40,   41,   28,   25,    0,   26,   38,   39,   31,
-       29,   37,   30,   33,   32,    1,    1,   35,   34,   36,
+       29,   35,   30,   33,   32,    1,    1,   36,   34,   37,
        20,   21,   24,   22,   23,   40,   40,   18,   19,   40,
        40,   40,   40,   40,   40,   40,   40,   40,   40,   40,
        40,   27,   25,    0,    2,   26,   33,   34,   21,   24,
@@ -576,7 +576,8 @@ char *yytext;
 #line 2 "lang.flex"
 #include <stdio.h>
 #include "analis.tab.h"
-#line 580 "lex.yy.c"
+#define YYSTYPE
+#line 581 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -768,9 +769,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 19 "lang.flex"
+#line 20 "lang.flex"
 
-#line 774 "lex.yy.c"
+#line 775 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -866,68 +867,68 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 22 "lang.flex"
-{ yylval.number = atoi(yytext); printf("NUMBER "); return NUMBER; }
+#line 23 "lang.flex"
+{ yylval.number = atoi(yytext); return NUMBER; }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 23 "lang.flex"
-{ yylval.string = strdup(yytext); printf("STRINGCONST "); return STRINGCONST; }
+#line 24 "lang.flex"
+{ yylval.string = strdup(yytext); return STRINGCONST; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 24 "lang.flex"
-{ printf("IF "); return IF; }	
+#line 25 "lang.flex"
+{ return IF; }	
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 25 "lang.flex"
-{ printf("THEN "); return THEN; }
+#line 26 "lang.flex"
+{ return THEN; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 26 "lang.flex"
-{ printf("ELSE "); return ELSE; }
+#line 27 "lang.flex"
+{ return ELSE; }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 27 "lang.flex"
-{ printf("WHILE "); return WHILE; }
+#line 28 "lang.flex"
+{ return WHILE; }
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 28 "lang.flex"
-{ printf("LOOP "); return LOOP; }
+#line 29 "lang.flex"
+{ return LOOP; }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 29 "lang.flex"
-{ printf("POOL "); return POOL; }
+#line 30 "lang.flex"
+{ return POOL; }
 	YY_BREAK
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 30 "lang.flex"
-{ printf("BLOCK "); return BLOCK; }
+#line 31 "lang.flex"
+{ return BLOCK; }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 31 "lang.flex"
-{ printf("KCOLB "); return KCOLB; }
+#line 32 "lang.flex"
+{ return KCOLB; }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 32 "lang.flex"
-{ printf("GOTO "); return GOTO; }
+#line 33 "lang.flex"
+{ return GOTO; }
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
@@ -935,8 +936,8 @@ case 12:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 33 "lang.flex"
-{ printf("WRITE "); return WRITE; }
+#line 34 "lang.flex"
+{ return WRITE; }
 	YY_BREAK
 case 13:
 /* rule 13 can match eol */
@@ -944,178 +945,178 @@ case 13:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 34 "lang.flex"
-{ printf("READ "); return READ; }
+#line 35 "lang.flex"
+{ return READ; }
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 35 "lang.flex"
-{ printf("STRING "); return STRING; }
+#line 36 "lang.flex"
+{ return STRING; }
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
-#line 36 "lang.flex"
-{ printf("INTEGER "); return INTEGER; }
+#line 37 "lang.flex"
+{ return INTEGER; }
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 37 "lang.flex"
-{ printf("LABEL "); return LABEL; }
+#line 38 "lang.flex"
+{ return LABEL; }
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 38 "lang.flex"
-{ printf("RETURN "); return RETURN; }
+#line 39 "lang.flex"
+{ return RETURN; }
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 39 "lang.flex"
-{ printf("RECOPENBRACE "); return RECOPENBRACE; }
+#line 40 "lang.flex"
+{ return RECOPENBRACE; }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 40 "lang.flex"
-{ printf("RECCLOSEBRACE "); return RECCLOSEBRACE; }
+#line 41 "lang.flex"
+{ return RECCLOSEBRACE; }
 	YY_BREAK
 case 20:
 /* rule 20 can match eol */
 YY_RULE_SETUP
-#line 41 "lang.flex"
-{ printf("LT "); return LT; }
+#line 42 "lang.flex"
+{ return LT; }
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 42 "lang.flex"
-{ printf("LE "); return LE; }
+#line 43 "lang.flex"
+{ return LE; }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 43 "lang.flex"
-{ printf("GT "); return GT; }
+#line 44 "lang.flex"
+{ return GT; }
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 44 "lang.flex"
-{ printf("GE "); return GE; }
+#line 45 "lang.flex"
+{ return GE; }
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 45 "lang.flex"
-{ printf("EQ "); return EQ; }
+#line 46 "lang.flex"
+{ return EQ; }
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 46 "lang.flex"
-{ printf("NE "); return NE; }
+#line 47 "lang.flex"
+{ return NE; }
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 47 "lang.flex"
-{ printf("AND "); return AND; }
+#line 48 "lang.flex"
+{ return AND; }
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 48 "lang.flex"
-{ printf("OR "); return OR; }
+#line 49 "lang.flex"
+{ return OR; }
 	YY_BREAK
 case 28:
 /* rule 28 can match eol */
 YY_RULE_SETUP
-#line 49 "lang.flex"
-{ printf("NOT "); return NOT; }
+#line 50 "lang.flex"
+{ return NOT; }
 	YY_BREAK
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 50 "lang.flex"
-{ printf("ADD "); return ADD; }
+#line 51 "lang.flex"
+{ return ADD; }
 	YY_BREAK
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 51 "lang.flex"
-{ printf("SUB "); return SUB; }
+#line 52 "lang.flex"
+{ return SUB; }
 	YY_BREAK
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 52 "lang.flex"
-{ printf("MUL "); return MUL; }
+#line 53 "lang.flex"
+{ return MUL; }
 	YY_BREAK
 case 32:
 /* rule 32 can match eol */
 YY_RULE_SETUP
-#line 53 "lang.flex"
-{ printf("DIV "); return DIV; }		
+#line 54 "lang.flex"
+{ return DIV; }		
 	YY_BREAK
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 54 "lang.flex"
-{ printf("REF "); return REF; }
+#line 55 "lang.flex"
+{ return REF; }
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 55 "lang.flex"
-{ printf("ASSIGN "); return ASSIGN; }
+#line 56 "lang.flex"
+{ return ASSIGN; }
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 56 "lang.flex"
-{ printf("COLON "); return COLON; }
+#line 57 "lang.flex"
+{ return COMA; }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 57 "lang.flex"
-{ printf("SEMICOLON "); return SEMICOLON; }
+#line 58 "lang.flex"
+{ /*printf("COLON"); */return COLON; }
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
-#line 58 "lang.flex"
-{ printf("COMA "); return COMA; }
+#line 59 "lang.flex"
+{ return SEMICOLON; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 59 "lang.flex"
-{ printf("OBRACE "); return OBRACE; }
+#line 60 "lang.flex"
+{ return OBRACE; }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
-#line 60 "lang.flex"
-{ printf("CBRACE "); return CBRACE; }
+#line 61 "lang.flex"
+{ return CBRACE; }
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 61 "lang.flex"
-{ yylval.string = strdup(yytext); printf("NAME "); return NAME; }				
+#line 62 "lang.flex"
+{ yylval.string = strdup(yytext); /*printf("NAME");*/ return NAME; }				
 	YY_BREAK
 
 case 41:
 YY_RULE_SETUP
-#line 64 "lang.flex"
+#line 65 "lang.flex"
 ECHO;
 	YY_BREAK
-#line 1119 "lex.yy.c"
+#line 1120 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2166,7 +2167,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 64 "lang.flex"
+#line 65 "lang.flex"
 
 
 
