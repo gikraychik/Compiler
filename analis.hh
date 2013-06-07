@@ -60,35 +60,36 @@ extern int yydebug;
      COMA = 269,
      RETURN = 270,
      ASSIGN = 271,
-     LT = 272,
-     LE = 273,
-     GT = 274,
-     GE = 275,
-     EQ = 276,
-     NE = 277,
-     OR = 278,
-     AND = 279,
-     NOT = 280,
-     IF = 281,
-     WHILE = 282,
-     LOOP = 283,
-     POOL = 284,
-     READ = 285,
-     WRITE = 286,
-     LABEL = 287,
-     RECOPENBRACE = 288,
-     RECCLOSEBRACE = 289,
-     BLOCK = 290,
-     KCOLB = 291,
-     THEN = 292,
-     ELSE = 293,
-     GOTO = 294,
-     ADD = 295,
-     SUB = 296,
-     MUL = 297,
-     DIV = 298,
-     OBRACE = 299,
-     CBRACE = 300
+     IF = 272,
+     WHILE = 273,
+     LOOP = 274,
+     POOL = 275,
+     READ = 276,
+     WRITE = 277,
+     EOFF = 278,
+     LABEL = 279,
+     RECOPENBRACE = 280,
+     RECCLOSEBRACE = 281,
+     BLOCK = 282,
+     KCOLB = 283,
+     THEN = 284,
+     ELSE = 285,
+     GOTO = 286,
+     OBRACE = 287,
+     CBRACE = 288,
+     OR = 289,
+     AND = 290,
+     NOT = 291,
+     NE = 292,
+     EQ = 293,
+     GE = 294,
+     LE = 295,
+     GT = 296,
+     LT = 297,
+     SUB = 298,
+     ADD = 299,
+     DIV = 300,
+     MUL = 301
    };
 #endif
 
@@ -104,7 +105,7 @@ typedef union YYSTYPE
 
 
 /* Line 2049 of yacc.c  */
-#line 108 "analis.hh"
+#line 109 "analis.hh"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

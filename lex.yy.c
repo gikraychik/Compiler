@@ -1108,23 +1108,24 @@ case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
 #line 62 "lang.flex"
-{ 
+{
 							char *s = yytext;
 							while (1) {
 								if ((*yytext == ' ') || (*yytext == 0)) { break; }
 								yytext++;
 							}
 							*yytext = 0; yytext = s;
-							yylval.string = strdup(yytext); /*printf(yylval.string);*/ return NAME;
+							yylval.string = strdup(yytext); return NAME;
 						}
 	YY_BREAK
+/*<<EOF>>					{ printf("EOF\n"); return EOFF; }*/
 
 case 41:
 YY_RULE_SETUP
-#line 73 "lang.flex"
+#line 74 "lang.flex"
 ECHO;
 	YY_BREAK
-#line 1128 "lex.yy.c"
+#line 1129 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2175,7 +2176,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 73 "lang.flex"
+#line 74 "lang.flex"
 
 
 

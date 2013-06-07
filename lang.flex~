@@ -59,15 +59,16 @@ DELIM {WS}|[;]
 	";"{WSN}				{ return SEMICOLON; }
 	"("{WSN}				{ return OBRACE; }
 	")"{WSN}				{ return CBRACE; }
-	{NAME}{WSN}				{ 
-							char *s = yytext;
+	{NAME}{WSN}				{ printf(yytext); 
+						/*	char *s = yytext;
 							while (1) {
 								if ((*yytext == ' ') || (*yytext == 0)) { break; }
 								yytext++;
 							}
 							*yytext = 0; yytext = s;
-							yylval.string = strdup(yytext); /*printf(yylval.string);*/ return NAME;
+							yylval.string = strdup(yytext); return NAME;*/
 						}
+	/*<<EOF>>					{ printf("EOF\n"); return EOFF; }*/
 }
 
 %%
