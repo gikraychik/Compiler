@@ -18,6 +18,7 @@ int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
 stack<int> while_counter;
+map<char *, vector<int *> >funcs;
 
 extern "C"
 {
@@ -114,7 +115,14 @@ int init_int(char *name)
 }
 int init_const_string(const char *value)
 {
-	cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl;
+	if (!strcmp(value, ""))
+	{
+		cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl;
+	}
+	else
+	{
+		cout << "STRING " << get_name() << ", " << value << endl;
+	}
 	return v.back();
 }
 int init_string(char *name)
@@ -180,13 +188,16 @@ type :		STRING
 		;
 decl_var :	namelist COLON STRING SEMICOLON
 		{
-
+			for (int i = 0; i < names.size(); i++)
+			{
+				m[names[i]] = itoa(init_const_string(""));
+			}
+			names.clear();
 		}
 		| namelist COLON INTEGER SEMICOLON
 		{
 			for (int i = 0; i < names.size(); i++)
 			{
-				//m.insert(pair<char *, char *>(names[i], itoa(init_int(0))));
 				m[names[i]] = itoa(init_int(0));
 			}
 			names.clear();
@@ -226,8 +237,14 @@ decl_label :	LABEL NAME SEMICOLON
 		}
 		;
 decl_func :	NAME COLON type OBRACE chain_param CBRACE func_block
+		{
+			funcs[$1] = new vector<int>();
+		}
 		;
-chain_param : 	decl_list namelist COLON type
+chain_param : 	decl_list namelist COLON INTEGER
+		{
+		}
+		| decl_list namelist COLON STRING
 		;
 decl_list :	decl_list decl_var
 		| decl_var
@@ -242,13 +259,21 @@ action :	assign
 		;
 assign :	NAME ASSIGN expr SEMICOLON
 		{
-			//move(itoa(v.back()), m[$1]);
 			move($<string>3, match($1));
 		}
 		;
 io :		READ OBRACE NAME CBRACE SEMICOLON
+		{
+			code << "READ " << match($3) << endl;
+		}
 		| WRITE OBRACE NAME CBRACE SEMICOLON
+		{
+			code << "WRITE " << match($3) << endl;
+		}
 		| WRITE OBRACE NUMBER CBRACE SEMICOLON
+		{
+			code << "WRITE " << $3 << endl;
+		}
 		;
 goto : 		GOTO NAME SEMICOLON
 		{
@@ -258,6 +283,9 @@ goto : 		GOTO NAME SEMICOLON
 		}
 		;
 expr : 		string_expr
+		{
+			$<string>$ = $<string>1;
+		}
 		| int_expr
 		{
 			$<string>$ = $<string>1;
@@ -355,13 +383,45 @@ int_expr :	int_expr MUL int_expr
 		}
 		;
 string_expr :	string_expr ADD string_factor
+		{
+			int num = init_const_string("");
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("ADD", $<string>1, $<string>3, name);
+		}
 		| string_factor
+		{
+			$<string>$ = $<string>1;
+		}
 		;
-string_factor :	OBRACE string_factor CBRACE
+string_factor :	OBRACE string_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
 		| STRINGCONST
+		{			
+			int num = init_const_string($1);
+			char *name = itoa(num);
+			$<string>$ = name;
+		}
 		| STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE
+		{			
+			int num = init_const_string("");
+			char *name = itoa(num);
+			$<string>$ = name;
+			code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+		}
 		| NAME
+		{
+			$<string>$ = match($1);
+		}
 		| NAME RECOPENBRACE int_expr RECCLOSEBRACE
+		{			
+			int num = init_const_string("");
+			char *name = itoa(num);
+			$<string>$ = name;
+			code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+		}
 		;
 control :	cond
 		| cycle
@@ -408,13 +468,13 @@ cycle :		{
 			char *var_name = itoa(v.back());
 			char *name = itoa(init_int(0));
 			code << "NOT " << var_name << ", " << name << endl;
-			//free(var_name);
+			free(var_name);
 			var_name = strdup(name);
-			//free(name);
+			free(name);
 			name = get_label();
 			while_counter.push(num_label);
 			code << "BRANCH " << var_name << ", " << name << endl;
-			//free(var_name);
+			free(var_name);
 		}
 		LOOP commands POOL
 		{
@@ -426,8 +486,8 @@ cycle :		{
 			second[0] = 'b';
 			code << "GOTO " << second << endl;
 			set_label(first);
-			//free(first);
-			//free(second);
+			free(first);
+			free(second);
 		}
 		;
 

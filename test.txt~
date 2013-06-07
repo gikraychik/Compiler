@@ -1,6 +1,4 @@
-x, y:integer;
-while 1 loop
-	while 2 loop
-		x:= x + 3;
-	pool
-pool
+s, str: string;
+s:= "hi";
+str:= "kik";
+s:= str[1+2];

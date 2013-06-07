@@ -12,7 +12,7 @@ DIGIT [0-9]
 NAME [a-zA-Z][a-zA-Z0-9]*
 LABELNAME [a-zA-Z0-9]+
 QUOTE [\"]
-STRINGCONST {QUOTE}[a-zA-Z0-9]+{QUOTE}
+STRINGCONST [a-zA-Z0-9]+
 WS [ \t\n]+
 WSN [ \t\n]*
 DELIM {WS}|[;]
@@ -21,7 +21,7 @@ DELIM {WS}|[;]
 <INITIAL>
 {
 	{DIGIT}+{WSN}				{ yylval.number = atoi(yytext); return NUMBER; }
-	{STRINGCONST}{WSN}			{ yylval.string = strdup(yytext); return STRINGCONST; }
+	{QUOTE}{STRINGCONST}{QUOTE}{WSN}	{ yylval.string = strdup(yytext); return STRINGCONST; }
 	"if"{WS}				{ return IF; }	
 	"==>"{WS}				{ return THEN; }
 	"!=>"{WS}				{ return ELSE; }
