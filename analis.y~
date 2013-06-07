@@ -3,16 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <map>
+#include <sstream>
 #include <iostream>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
+ostringstream code;
 vector<int> v;
 map<char *, char *> m;
 vector<char *> names;
 int num_label = 0;
 map<char *, char *> refs;
+stack<int> if_counter;
 
 extern "C"
 {
@@ -34,7 +38,7 @@ void yyerror(const char *s)
 }*/
 void move(char *name1, char *name2)
 {
-	cout << "MOVE " << name1 << ", " << name2 << endl;
+	code << "MOVE " << name1 << ", " << name2 << endl;
 }
 void reverse(char s[])
 {
@@ -121,12 +125,17 @@ int init_string(char *name)
 }
 void ternary(const char *s, char *name1, char *name2, char *name3)
 {
-	cout << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
+	code << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
+}
+void set_label(const char *name)
+{
+	code << "LABEL " << name << endl;
 }
 int main()
 {
 	v.push_back(0);
 	yyparse();
+	cout << code.str();
 }
 %}
 
@@ -148,7 +157,7 @@ int main()
 %left MUL DIV
 
 %%
-program : 	
+program : 	/* empty */
 		| commands
 		;
 commands : 	commands command
@@ -204,7 +213,7 @@ decl_label :	LABEL NAME SEMICOLON
 		{
 			char *name = get_label();
 			m[$2] = name;
-			cout << "LABEL " << name << endl;
+			set_label(name);
 		}
 		;
 decl_func :	NAME COLON type OBRACE chain_param CBRACE func_block
@@ -234,7 +243,7 @@ io :		READ OBRACE NAME CBRACE SEMICOLON
 		;
 goto : 		GOTO NAME SEMICOLON
 		{
-			cout << "GOTO " << match($2) << endl;
+			code << "GOTO " << match($2) << endl;
 		}
 		;
 expr : 		string_expr
@@ -277,49 +286,49 @@ int_expr :	int_expr MUL int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("OR", $<string>1, $<string>3, name);	
 		}
 		| int_expr LT int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("LT", $<string>1, $<string>3, name);	
 		}
 		| int_expr LE int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("LE", $<string>1, $<string>3, name);	
 		}
 		| int_expr GT int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("GT", $<string>1, $<string>3, name);	
 		}
 		| int_expr GE int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("GE", $<string>1, $<string>3, name);	
 		}
 		| int_expr EQ int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("EQ", $<string>1, $<string>3, name);	
 		}
 		| int_expr NE int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			ternary("AND", $<string>1, $<string>3, name);	
+			ternary("NE", $<string>1, $<string>3, name);	
 		}
 		| NOT int_expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			cout << "NOT " << $<string>2 << ", " << name << endl;
+			code << "NOT " << $<string>2 << ", " << name << endl;
 		}
 		| OBRACE int_expr CBRACE
 		{
@@ -346,7 +355,37 @@ string_factor :	OBRACE string_factor CBRACE
 control :	cond
 		| cycle
 		;
-cond :		IF int_expr THEN block ELSE block
+cond :		IF int_expr
+		{
+			char *name_var = itoa(v.back());
+			char *name_label = get_label();
+			code << "BRANCH " << name_var << ", " << name_label << endl;
+			free(name_var);
+			//free(name_label);
+			//name_label = get_label();
+			code << "GOTO " << get_label() << endl;
+			set_label(name_label);
+			//free(name_label);
+			if_counter.push(num_label);
+		}		
+		THEN block
+		{
+			char *name_label = get_label();
+			code << "GOTO " << name_label << endl;
+			int first = if_counter.top();
+			name_label = itoa(first);
+			name_label[0] = 'b';
+			set_label(name_label);
+			if_counter.push(num_label);
+			free(name_label);
+		}
+		ELSE block
+		{
+			char *name_label = itoa(if_counter.top());
+			name_label[0] = 'b';
+			set_label();
+			for (int i = 0; i < 2; i++) { if_counter.pop(); }
+		}
 		;
 cycle :		WHILE int_expr LOOP commands POOL
 		;
