@@ -119,6 +119,10 @@ int init_string(char *name)
 	move(s, name);
 	return v.back();
 }
+void ternary(char *s, char *name1, char *name2, char *name3)
+{
+	cout << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
+}
 int main()
 {
 	v.push_back(0);
@@ -232,21 +236,105 @@ expr : 		string_expr
 		{
 			$<string>$ = $<string>1;
 		}
-		| bool_expr
 		;
-int_expr :	int_expr ADD int_term
+int_expr :	int_expr LT int_expr
 		{
 			int num = init_int(0);
 			char *name = itoa(num);
 			$<string>$ = name;
-			cout << "ADD " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+			ternary("LT", $<string>1, $<string>3, name);
 		}
-		| int_expr SUB int_term
+		int_expr GT int_expr
 		{
 			int num = init_int(0);
 			char *name = itoa(num);
 			$<string>$ = name;
-			cout << "SUB " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+			ternary("GT", $<string>1, $<string>3, name);
+		}
+		int_expr LE int_expr
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("LE", $<string>1, $<string>3, name);
+		}
+		int_expr GE int_expr
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("GE", $<string>1, $<string>3, name);
+		}
+		int_expr EQ int_expr
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("EQ", $<string>1, $<string>3, name);
+		}
+		int_expr NE int_expr
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("NE", $<string>1, $<string>3, name);
+		}
+		| int_expr_1
+		{
+			$<string>$ = $<string>1;
+		}
+		| OBRACE int_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
+		;
+int_expr_1 :	int_expr_1 OR int_expr_2
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("OR", $<string>1, $<string>3, name);
+		}
+		| int_expr_2
+		{
+			$<string>$ = $<string>1;
+		}
+		| OBRACE int_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
+		;
+int_expr_2 :	int_expr_2 AND int_expr_3
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			ternary("AND", $<string>1, $<string>3, name);
+		}
+		| int_expr_3
+		{
+			$<string>$ = $<string>1;
+		}
+		| OBRACE int_expr CBRACE
+		{
+			$<string>$ = $<string>2;
+		}
+		;
+int_expr_3 :	int_expr_3 ADD int_term
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			//cout << "ADD " << $<string>1 << ", " << $<string>3 << ", " << name << endl;
+			ternary("ADD", $<string>1, $<string>3, name);
+		}
+		| int_expr_3 SUB int_term
+		{
+			int num = init_int(0);
+			char *name = itoa(num);
+			$<string>$ = name;
+			//cout << "SUB " << $<string>1 << ", " << $<string>3 << ", " << name << endl;
+			ternary("SUB", $<string>1, $<string>3, name);
 		}
 		| int_term
 		{
@@ -258,14 +346,16 @@ int_term :	int_term MUL int_factor
 			int num = init_int(0);
 			char *name = itoa(num);
 			$<string>$ = name;
-			cout << "MUL " << $<string>1 << ", " << $<string>3 << ", " << name << endl;	
+			//cout << "MUL " << $<string>1 << ", " << $<string>3 << ", " << name << endl;
+			ternary("MUL", $<string>1, $<string>3, name);	
 		}
 		| int_term DIV int_factor
 		{
 			int num = init_int(0);
 			char *name = itoa(num);
 			$<string>$ = name;
-			cout << "DIV " << $<string>1 << ", " << $<number>3 << ", " << name << endl;	
+			//cout << "DIV " << $<string>1 << ", " << $<number>3 << ", " << name << endl;
+			ternary("DIV", $<string>1, $<string>3, name);	
 		}
 		| int_factor
 		{
@@ -289,7 +379,7 @@ int_factor :	NUMBER
 			}
 			//cout << "Testing: " << match($1) << endl;
 		}
-		| OBRACE int_expr CBRACE
+		| OBRACE int_expr_3 CBRACE
 		{
 			$<string>$ = $<string>2;
 		}
