@@ -17,6 +17,7 @@ vector<char *> names;
 int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
+stack<int> while_counter;
 
 extern "C"
 {
@@ -193,11 +194,19 @@ decl_var :	namelist COLON STRING SEMICOLON
 		;
 namelist : 	namelist COMA NAME
 		{
-			names.push_back($3);
+			char *internal_name = match($3);
+			if (internal_name == NULL)
+			{
+				names.push_back($3);
+			}
 		}
 		| NAME
 		{
-			names.push_back($1);
+			char *internal_name = match($1);
+			if (internal_name == NULL)
+			{
+				names.push_back($1);
+			};
 		}
 		;
 decl_ref :	NAME REF NAME COLON type SEMICOLON
@@ -243,7 +252,9 @@ io :		READ OBRACE NAME CBRACE SEMICOLON
 		;
 goto : 		GOTO NAME SEMICOLON
 		{
-			code << "GOTO " << match($2) << endl;
+			char *name = match($2);
+			if (name == NULL) { code << "GOTO " << "" << endl; }
+			else { code << "GOTO " << name << endl; }
 		}
 		;
 expr : 		string_expr
@@ -387,7 +398,37 @@ cond :		IF int_expr
 			for (int i = 0; i < 2; i++) { if_counter.pop(); }
 		}
 		;
-cycle :		WHILE int_expr LOOP commands POOL
+cycle :		{
+			char *name = get_label();
+			while_counter.push(num_label);
+			set_label(name);
+		}
+		WHILE int_expr
+		{
+			char *var_name = itoa(v.back());
+			char *name = itoa(init_int(0));
+			code << "NOT " << var_name << ", " << name << endl;
+			//free(var_name);
+			var_name = strdup(name);
+			//free(name);
+			name = get_label();
+			while_counter.push(num_label);
+			code << "BRANCH " << var_name << ", " << name << endl;
+			//free(var_name);
+		}
+		LOOP commands POOL
+		{
+			char *first = itoa(while_counter.top());
+			while_counter.pop();
+			char *second = itoa(while_counter.top());
+			while_counter.pop();
+			first[0] = 'b';
+			second[0] = 'b';
+			code << "GOTO " << second << endl;
+			set_label(first);
+			//free(first);
+			//free(second);
+		}
 		;
 
 

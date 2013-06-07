@@ -1,11 +1,6 @@
-x, y, z: integer;
-if 1<2 ==>
-block
-	if 0 ==> block z := y; kcolb !=> block z:= x; kcolb
-	x  := y;
-kcolb
-!=>
-block
-y:= x;
-kcolb	
-	x  := y;
+x, y:integer;
+while 1 loop
+	while 2 loop
+		x:= x + 3;
+	pool
+pool
