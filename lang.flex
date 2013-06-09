@@ -34,7 +34,7 @@ DELIM {WS}|[;]
 	"write"{WSN}/"("			{ return WRITE; }
 	"read"{WSN}/"("				{ return READ; }
 	"string"{WSN}				{ return STRING; }
-	"integer"{WSN}				{ return INTEGER; }
+	"integer"{WSN}				{ printf("INTEGER"); return INTEGER; }
 	"label"{WS}				{ return LABEL; }
 	"return"{WS}				{ return RETURN; }
 	"["{WSN}				{ return RECOPENBRACE; }
@@ -53,10 +53,10 @@ DELIM {WS}|[;]
 	"*"{WSN}				{ return MUL; }
 	"/"{WSN}				{ return DIV; }		
 	"->"{WSN}				{ return REF; }
-	":="{WSN}				{ return ASSIGN; }
-	","{WSN}				{ /*printf("COMA");*/ return COMA; }
-	":"{WSN}				{ /*printf("COLON");*/ return COLON; }
-	";"{WSN}				{ return SEMICOLON; }
+	":="{WSN}				{ printf("ASSIGN"); return ASSIGN; }
+	","{WSN}				{ printf("COMA"); return COMA; }
+	":"{WSN}				{ printf("COLON"); return COLON; }
+	";"{WSN}				{ printf("SEMICOLON"); return SEMICOLON; }
 	"("{WSN}				{ return OBRACE; }
 	")"{WSN}				{ return CBRACE; }
 	{NAME}{WSN}				{
@@ -66,7 +66,7 @@ DELIM {WS}|[;]
 								yytext++;
 							}
 							*yytext = 0; yytext = s;
-							yylval.string = strdup(yytext); return NAME;
+							yylval.string = strdup(yytext); printf(yytext); return NAME;
 						}
 	/*<<EOF>>					{ printf("EOF\n"); return EOFF; }*/
 }

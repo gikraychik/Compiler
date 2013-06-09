@@ -1,4 +1,1 @@
-s, str: string;
-s:= "hi";
-str:= "kik";
-s:= str[1+2];
+x: integer;

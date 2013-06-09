@@ -1,5 +1,2 @@
-s, str: string;
-s:= "hi";
-str:= "kik";
-s:= str[1+2];
-write(s);
+x: integer;
+x:= 3;
