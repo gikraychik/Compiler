@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <set>
 
 using namespace std;
 
@@ -24,6 +25,8 @@ map<char *, char *> tmp;
 map<char *, char *> func_beg;
 int ret_val = 0;
 int ret_addr = 0;
+set<const char *> strings;
+bool isString = false;
 
 extern "C"
 {
@@ -107,12 +110,14 @@ char *match_ref(const char *internal_name)
 }
 int init_int(int value)
 {
+	isString = false;
 	char *s = get_name();
 	cout << "INTEGER " << s << ", " << value << endl;
 	return v.back();
 }
 int init_int(char *name)
 {
+	isString = false;
 	char *s = get_name();
 	cout << "INTEGER " << s << ", " << 0 << endl;
 	move(s, name);
@@ -120,6 +125,8 @@ int init_int(char *name)
 }
 int init_const_string(const char *value)
 {
+	isString = true;
+	strings.insert(value);
 	if (!strcmp(value, ""))
 	{
 		cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl;
@@ -130,13 +137,15 @@ int init_const_string(const char *value)
 	}
 	return v.back();
 }
-int init_string(char *name)
+/*int init_string(char *name)
 {
+	isString = true;
+	strings.insert(value);
 	char *s = get_name();
 	cout << "STRING " << get_name() << ", " << "" << endl;
 	move(s, name);
 	return v.back();
-}
+}*/
 void ternary(const char *s, char *name1, char *name2, char *name3)
 {
 	code << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
@@ -149,6 +158,7 @@ void addVars(map<char *, char *> &m, const char *str)
 {
 	if (!strcmp(str, "string"))
 	{
+		strings.insert(str);
 		for (int i = 0; i < names.size(); i++)
 		{
 			m[names[i]] = itoa(init_const_string(""));
@@ -218,7 +228,7 @@ decl_var :	namelist COLON STRING SEMICOLON
 			addVars(m, "integer");
 		}
 		;
-namelist : 	namelist COMA NAME
+namelist :	namelist COMA NAME
 		{
 			char *internal_name = match($3);
 			if (internal_name == NULL)
@@ -368,94 +378,93 @@ goto : 		GOTO NAME SEMICOLON
 			else { code << "GOTO " << name << endl; }
 		}
 		;
-expr : 		string_expr
-		{
-			$<string>$ = $<string>1;
-		}
-		| int_expr
-		{
-			$<string>$ = $<string>1;
-		}
-		;
-int_expr :	int_expr MUL int_expr
+expr : 		expr MUL expr
 		{			
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("MUL", $<string>1, $<string>3, name);
 		}
-		| int_expr DIV int_expr
+		| expr DIV expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("DIV", $<string>1, $<string>3, name);	
 		}
-		| int_expr ADD int_expr
+		| expr ADD expr
 		{
-			char *name = itoa(init_int(0));
+			char *name;
+			if (isString)
+			{
+				name = itoa(init_const_string(""));
+			}
+			else
+			{
+				name = itoa(init_int(0));
+			}
 			$<string>$ = name;
 			ternary("ADD", $<string>1, $<string>3, name);
 		}
-		| int_expr SUB int_expr
+		| expr SUB expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("SUB", $<string>1, $<string>3, name);	
 		}
-		| int_expr AND int_expr
+		| expr AND expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("AND", $<string>1, $<string>3, name);	
 		}
-		| int_expr OR int_expr
+		| expr OR expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("OR", $<string>1, $<string>3, name);	
 		}
-		| int_expr LT int_expr
+		| expr LT expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("LT", $<string>1, $<string>3, name);	
 		}
-		| int_expr LE int_expr
+		| expr LE expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("LE", $<string>1, $<string>3, name);	
 		}
-		| int_expr GT int_expr
+		| expr GT expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("GT", $<string>1, $<string>3, name);	
 		}
-		| int_expr GE int_expr
+		| expr GE expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("GE", $<string>1, $<string>3, name);	
 		}
-		| int_expr EQ int_expr
+		| expr EQ expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("EQ", $<string>1, $<string>3, name);	
 		}
-		| int_expr NE int_expr
+		| expr NE expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("NE", $<string>1, $<string>3, name);	
 		}
-		| NOT int_expr
+		| NOT expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			code << "NOT " << $<string>2 << ", " << name << endl;
 		}
-		| OBRACE int_expr CBRACE
+		| OBRACE expr CBRACE
 		{
 			$<string>$ = $<string>2;
 		}
@@ -463,46 +472,32 @@ int_expr :	int_expr MUL int_expr
 		{
 			$<string>$ = itoa(init_int($1));
 		}
-		| NAME
-		{
-			$<string>$ = match($1);
-		}
-		;
-string_expr :	string_expr ADD string_factor
-		{
-			int num = init_const_string("");
-			char *name = itoa(num);
-			$<string>$ = name;
-			ternary("ADD", $<string>1, $<string>3, name);
-		}
-		| string_factor
-		{
-			$<string>$ = $<string>1;
-		}
-		;
-string_factor :	OBRACE string_expr CBRACE
-		{
-			$<string>$ = $<string>2;
-		}
 		| STRINGCONST
 		{			
 			int num = init_const_string($1);
 			char *name = itoa(num);
 			$<string>$ = name;
 		}
-		| STRINGCONST RECOPENBRACE int_expr RECCLOSEBRACE
-		{			
+		| STRINGCONST RECOPENBRACE expr RECCLOSEBRACE
+		{		
+			char *new_name = itoa(init_const_string($<string>1));
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
-			code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+			code << "IND " << new_name << ", " << itoa(v.back()-1) << ", " << name << endl;
 		}
 		| NAME
 		{
-			$<string>$ = match($1);
+			char *name = match($1);
+			if (strings.find(name) == strings.end())
+			{
+				isString = false;
+			}
+			else { isString = true; }
+			$<string>$ = name;
 		}
-		| NAME RECOPENBRACE int_expr RECCLOSEBRACE
-		{			
+		| NAME RECOPENBRACE expr RECCLOSEBRACE
+		{	
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
@@ -512,7 +507,7 @@ string_factor :	OBRACE string_expr CBRACE
 control :	cond
 		| cycle
 		;
-cond :		IF int_expr
+cond :		IF expr
 		{
 			char *name_var = itoa(v.back());
 			char *name_label = get_label();
@@ -549,7 +544,7 @@ cycle :		{
 			while_counter.push(num_label);
 			set_label(name);
 		}
-		WHILE int_expr
+		WHILE expr
 		{
 			char *var_name = itoa(v.back());
 			char *name = itoa(init_int(0));

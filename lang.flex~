@@ -56,7 +56,7 @@ DELIM {WS}|[;]
 	":="{WSN}				{ printf("ASSIGN"); return ASSIGN; }
 	","{WSN}				{ printf("COMA"); return COMA; }
 	":"{WSN}				{ printf("COLON"); return COLON; }
-	";"{WSN}				{ return SEMICOLON; }
+	";"{WSN}				{ printf("SEMICOLON"); return SEMICOLON; }
 	"("{WSN}				{ return OBRACE; }
 	")"{WSN}				{ return CBRACE; }
 	{NAME}{WSN}				{

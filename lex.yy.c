@@ -958,7 +958,7 @@ case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 #line 37 "lang.flex"
-{ printf("INTEGER"); return INTEGER; }
+{ /*printf("INTEGER");*/ return INTEGER; }
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
@@ -1072,25 +1072,25 @@ case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
 #line 56 "lang.flex"
-{ printf("ASSIGN"); return ASSIGN; }
+{ /*printf("ASSIGN");*/ return ASSIGN; }
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
 #line 57 "lang.flex"
-{ printf("COMA"); return COMA; }
+{ /*printf("COMA");*/ return COMA; }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
 #line 58 "lang.flex"
-{ printf("COLON"); return COLON; }
+{ /*printf("COLON");*/ return COLON; }
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 #line 59 "lang.flex"
-{ printf("SEMICOLON"); return SEMICOLON; }
+{ /*printf("SEMICOLON");*/ return SEMICOLON; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
@@ -1115,7 +1115,7 @@ YY_RULE_SETUP
 								yytext++;
 							}
 							*yytext = 0; yytext = s;
-							yylval.string = strdup(yytext); printf(yytext); return NAME;
+							yylval.string = strdup(yytext); /*printf(yytext);*/ return NAME;
 						}
 	YY_BREAK
 /*<<EOF>>					{ printf("EOF\n"); return EOFF; }*/
