@@ -23,8 +23,8 @@ map<char *, vector<int *> >funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
-int ret_val = 0;
-int ret_addr = 0;
+stack<int> ret_val;
+stack<char *> ret_addr;
 set<const char *> strings;
 bool isString = false;
 
@@ -209,8 +209,8 @@ command :	decl
 		| action
 		| control
 		;
-decl :		decl_func
-		| decl_var
+decl :		decl_var
+		| decl_func
 		| decl_ref
 		| decl_label
 		;
@@ -261,26 +261,24 @@ decl_label :	LABEL NAME SEMICOLON
 			set_label(name);
 		}
 		;
-decl_func :	NAME
+decl_func :	NAME COLON INTEGER OBRACE
 		{
 			char *name = get_label();
 			func_beg[$1] = name;
 			set_label(name);
-		}
-		COLON INTEGER OBRACE chain_param CBRACE func_block
+			ret_val.push(init_int(0));
+			ret_addr.push(itoa(init_const_string("")));
+		}		
+		chain_param CBRACE func_block
 		| NAME COLON STRING OBRACE chain_param CBRACE func_block
 		;
 chain_param : 	chain_param namelist_decl COLON INTEGER
 		{
 			addVars(fm, "integer");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		| chain_param namelist_decl COLON INTEGER SEMICOLON
 		{
 			addVars(fm, "integer");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		| chain_param namelist_decl COLON STRING
 		{
@@ -293,26 +291,18 @@ chain_param : 	chain_param namelist_decl COLON INTEGER
 		| namelist_decl COLON INTEGER SEMICOLON
 		{
 			addVars(fm, "integer");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		| namelist_decl COLON INTEGER
 		{
 			addVars(fm, "integer");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		| namelist_decl COLON STRING SEMICOLON
 		{
 			addVars(fm, "string");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		| namelist_decl COLON STRING
 		{
 			addVars(fm, "string");
-			ret_val = init_int(0);
-			ret_addr = init_int(0);
 		}
 		;
 namelist_decl : namelist_decl COMA NAME
@@ -333,15 +323,16 @@ func_block :	BLOCK
 		}		
 		commands RETURN expr
 		{
-			char *where = itoa(ret_val);
+			char *where = itoa(ret_val.top());
 			char *what = itoa(v.back());
 			move(what, where);
 			free(what);
 			free(where);
-			where = itoa(ret_addr);
-			where[0] = 'b';
+			where = ret_addr.top();
 			code << "GOTO " << where << endl;
-			free(where);
+			//free(where);
+			ret_val.pop();
+			ret_addr.pop();
 		}		
 		SEMICOLON KCOLB
 		{
@@ -484,7 +475,7 @@ expr : 		expr MUL expr
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
-			code << "IND " << new_name << ", " << itoa(v.back()-1) << ", " << name << endl;
+			code << "IND " << new_name << ", " << itoa(v.back()-2) << ", " << name << endl;
 		}
 		| NAME
 		{

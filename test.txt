@@ -1,3 +1,5 @@
-x, y: string;
-x:= "hello";
-y:= x + "plus" + "lol"[(2+3)*4];
+f:integer(x, y: integer)
+block
+x:= 1 + 2;
+return x;
+kcolb
