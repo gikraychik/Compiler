@@ -23,10 +23,15 @@ map<char *, vector<int *> >funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
+map<char *, int> func_info;
 stack<int> ret_val;
 stack<char *> ret_addr;
 set<const char *> strings;
 bool isString = false;
+stack<char *> func_names;
+stack<int> curParam;
+map<char *, char *> func_type;
+stack<char *> types;
 
 extern "C"
 {
@@ -173,6 +178,16 @@ void addVars(map<char *, char *> &m, const char *str)
 	}
 	names.clear();
 }
+void goto_name(const char *name)
+{
+	code << "GOTO " << name << endl;
+}
+void goto_label(const char *label)
+{
+	char *name = itoa(init_const_string(label));
+	goto_name(name);
+}
+	
 int main()
 {
 	v.push_back(0);
@@ -268,6 +283,7 @@ decl_func :	NAME COLON INTEGER OBRACE
 			set_label(name);
 			ret_val.push(init_int(0));
 			ret_addr.push(itoa(init_const_string("")));
+			func_info[$1] = v.back();
 		}		
 		chain_param CBRACE func_block
 		| NAME COLON STRING OBRACE chain_param CBRACE func_block
@@ -321,7 +337,7 @@ func_block :	BLOCK
 			tmp = m;
 			m = fm;
 		}		
-		commands RETURN expr
+		program RETURN expr
 		{
 			char *where = itoa(ret_val.top());
 			char *what = itoa(v.back());
@@ -331,7 +347,7 @@ func_block :	BLOCK
 			where = ret_addr.top();
 			char *new_name = itoa(init_const_string(""));
 			code << "INDIR " << where << ", " << new_name << endl;
-			code << "GOTO " << new_name << endl;
+			goto_name(new_name);
 			//free(where);
 			ret_val.pop();
 			ret_addr.pop();
@@ -368,7 +384,7 @@ goto : 		GOTO NAME SEMICOLON
 		{
 			char *name = match($2);
 			if (name == NULL) { code << "GOTO " << "" << endl; }
-			else { code << "GOTO " << name << endl; }
+			else { goto_label(name); }
 		}
 		;
 expr : 		expr MUL expr
@@ -495,6 +511,50 @@ expr : 		expr MUL expr
 			char *name = itoa(num);
 			$<string>$ = name;
 			code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+		}
+		| NAME OBRACE
+		{
+			func_names.push($1);
+			curParam.push(func_info[$1]+1);
+			types.push(func_type[$1]);
+		}
+		act_params CBRACE
+		{
+			int num;
+			if (types.top() == "string")
+			{
+				num = init_const_string("");
+			}
+			else
+			{
+				num = init_int(0);
+			}
+			ret_val.push(num);
+			char *res_name = itoa(num);
+			$<string>$ = res_name;
+			char *name = itoa(func_info[func_names.top()]);
+			ret_addr.push(name);
+			//ret_addr.top()[0] = 'b';
+			curParam.pop();
+			func_names.pop();
+			types.pop();
+		}
+		;
+act_params :	act_params COMA expr
+		{
+			char *name = itoa(v.back());
+			char *dest = itoa(curParam.top());
+			move(name, dest);
+			free(dest);
+			curParam.top()++;
+		}
+		| expr
+		{
+			char *name = itoa(v.back());
+			char *dest = itoa(curParam.top());
+			move(name, dest);
+			free(dest);
+			curParam.top()++;
 		}
 		;
 control :	cond

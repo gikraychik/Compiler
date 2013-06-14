@@ -1,5 +1,7 @@
+q, w: integer;
+q:= 1;
+w:= q + f(3, 4);
 f:integer(x, y: integer)
 block
-x:= 1 + 2;
-return x;
+return x+2;
 kcolb
