@@ -77,7 +77,7 @@
 
 using namespace std;
 
-ostringstream code;
+ostringstream code, funcs;
 vector<int> v;
 map<char *, char *> m;
 vector<char *> names;
@@ -85,19 +85,15 @@ int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
 stack<int> while_counter;
-map<char *, vector<int *> >funcs;
+//map<char *, vector<int *> >funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
-map<char *, int> func_info;
-stack<int> ret_val;
-stack<char *> ret_addr;
 set<const char *> strings;
 bool isString = false;
 stack<char *> func_names;
 stack<int> curParam;
-map<char *, char *> func_type;
-stack<char *> types;
+char *cur_func_decl = NULL;
 
 extern "C"
 {
@@ -117,6 +113,54 @@ void yyerror(const char *s)
 {
 	return 1;
 }*/
+
+void swap(ostringstream &stream1, ostringstream &stream2)
+{
+	ostringstream s;
+	s << stream1.str();
+	stream2.str(stream1.str());
+	stream2.str(s.str());
+	/*string s = stream1.str();
+	stream1.str(stream2.str());
+	stream2.str(s);*/
+}
+
+class info
+{
+public:
+	info(const char *name, const char *ret_addr, const char *ret_val, int first)
+	{
+		this->ret_addr = strdup(ret_addr);
+		this->ret_val = strdup(ret_val);
+		this->name = strdup(name);
+		type = NULL;
+		this->first = first;
+	}
+	info(const char *name, const char *ret_addr, const char *ret_val, const char *type, int first)
+	{
+		this->ret_addr = strdup(ret_addr);
+		this->ret_val = strdup(ret_val);
+		this->name = strdup(name);
+		this->first = first;
+		this->type = strdup(type);
+	}
+	~info()
+	{
+		free(name);
+		free(ret_addr);
+		free(ret_val);
+		free(type);
+	}
+	char *name;
+	char *ret_addr;
+	char *ret_val;
+	char *type;
+	int first;
+};
+
+map<char *, info *> func_info;
+stack<info *> infoes;
+
 void move(char *name1, char *name2)
 {
 	code << "MOVE " << name1 << ", " << name2 << endl;
@@ -167,6 +211,30 @@ char *match(const char *s)
 	}
 	return NULL;
 }
+char *match_func_beg(const char *s)
+{
+	for (map<char *, char *>::iterator i = func_beg.begin(); i != func_beg.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
+info *match_func_info(const char *s)
+{
+	for (map<char *, info *>::iterator i = func_info.begin(); i != func_info.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
 char *match_ref(const char *internal_name)
 {
 	for (map<char *, char *>::iterator i = refs.begin(); i != refs.end(); i++)
@@ -204,7 +272,8 @@ int init_const_string(const char *value)
 	}
 	else
 	{
-		cout << "STRING " << get_name() << ", " << value << endl;
+		if (value[0] == '"') { cout << "STRING " << get_name() << ", " << value << endl; }
+		else { cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl; }
 	}
 	return v.back();
 }
@@ -256,13 +325,17 @@ void goto_label(const char *label)
 	
 int main()
 {
+	funcs << "STRING myVar, \"END\"" << endl;
+	funcs << "GOTO myVar" << endl;
 	v.push_back(0);
 	yyparse();
-	cout << code.str();
+	funcs << "LABEL END" << endl;
+	//cout << code.str();
+	cout << funcs.str();
 }
 
 /* Line 336 of yacc.c  */
-#line 266 "analis.tab.c"
+#line 339 "analis.tab.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -350,14 +423,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 350 of yacc.c  */
-#line 200 "analis.y"
+#line 273 "analis.y"
 
 	int number;
 	char *string;
 
 
 /* Line 350 of yacc.c  */
-#line 361 "analis.tab.c"
+#line 434 "analis.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -385,7 +458,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 353 of yacc.c  */
-#line 389 "analis.tab.c"
+#line 462 "analis.tab.c"
 
 #ifdef short
 # undef short
@@ -710,14 +783,14 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   217,   217,   218,   220,   221,   223,   224,   225,   227,
-     228,   229,   230,   232,   234,   237,   241,   246,   254,   263,
-     272,   280,   279,   289,   291,   295,   299,   303,   307,   311,
-     315,   319,   324,   328,   333,   336,   341,   335,   361,   362,
-     363,   365,   370,   374,   378,   383,   390,   396,   402,   416,
-     422,   428,   434,   440,   446,   452,   458,   464,   470,   476,
-     480,   484,   490,   498,   508,   516,   515,   543,   551,   560,
-     561,   564,   577,   563,   595,   601,   595
+       0,   290,   290,   291,   293,   294,   296,   297,   298,   300,
+     301,   302,   303,   305,   307,   310,   314,   319,   327,   336,
+     345,   353,   352,   369,   371,   375,   379,   383,   387,   391,
+     395,   399,   404,   408,   413,   416,   421,   415,   444,   445,
+     446,   448,   453,   457,   461,   466,   473,   479,   485,   499,
+     505,   511,   517,   523,   529,   535,   541,   547,   553,   559,
+     563,   567,   573,   581,   591,   599,   598,   629,   639,   650,
+     651,   654,   667,   653,   685,   691,   685
 };
 #endif
 
@@ -1749,19 +1822,19 @@ yyreduce:
     {
         case 13:
 /* Line 1787 of yacc.c  */
-#line 233 "analis.y"
+#line 306 "analis.y"
     {}
     break;
 
   case 14:
 /* Line 1787 of yacc.c  */
-#line 235 "analis.y"
+#line 308 "analis.y"
     {}
     break;
 
   case 15:
 /* Line 1787 of yacc.c  */
-#line 238 "analis.y"
+#line 311 "analis.y"
     {
 			addVars(m, "string");
 		}
@@ -1769,7 +1842,7 @@ yyreduce:
 
   case 16:
 /* Line 1787 of yacc.c  */
-#line 242 "analis.y"
+#line 315 "analis.y"
     {
 			addVars(m, "integer");
 		}
@@ -1777,7 +1850,7 @@ yyreduce:
 
   case 17:
 /* Line 1787 of yacc.c  */
-#line 247 "analis.y"
+#line 320 "analis.y"
     {
 			char *internal_name = match((yyvsp[(3) - (3)].string));
 			if (internal_name == NULL)
@@ -1789,7 +1862,7 @@ yyreduce:
 
   case 18:
 /* Line 1787 of yacc.c  */
-#line 255 "analis.y"
+#line 328 "analis.y"
     {
 			char *internal_name = match((yyvsp[(1) - (1)].string));
 			if (internal_name == NULL)
@@ -1801,7 +1874,7 @@ yyreduce:
 
   case 19:
 /* Line 1787 of yacc.c  */
-#line 264 "analis.y"
+#line 337 "analis.y"
     {
 			char *internal_name = get_name();
 			m[(yyvsp[(1) - (6)].string)] = internal_name;
@@ -1813,7 +1886,7 @@ yyreduce:
 
   case 20:
 /* Line 1787 of yacc.c  */
-#line 273 "analis.y"
+#line 346 "analis.y"
     {
 			char *name = get_label();
 			m[(yyvsp[(2) - (3)].string)] = name;
@@ -1823,20 +1896,32 @@ yyreduce:
 
   case 21:
 /* Line 1787 of yacc.c  */
-#line 280 "analis.y"
+#line 353 "analis.y"
     {
+			swap(code, funcs);
 			char *name = get_label();
 			func_beg[(yyvsp[(1) - (4)].string)] = name;
 			set_label(name);
-			ret_val.push(init_int(0));
-			ret_addr.push(itoa(init_const_string("")));
-			func_info[(yyvsp[(1) - (4)].string)] = v.back();
+			char *ret_val = itoa(init_int(0));
+			char *ret_addr = itoa(init_const_string(""));
+			info *inf = new info((yyvsp[(1) - (4)].string), ret_addr, ret_val, "integer", v.back() + 1);
+			func_info.insert(pair<char *, info *>((yyvsp[(1) - (4)].string), inf));		
+			//func_info[$1] = inf;
+			cur_func_decl = (yyvsp[(1) - (4)].string);
+		}
+    break;
+
+  case 22:
+/* Line 1787 of yacc.c  */
+#line 366 "analis.y"
+    {
+			swap(code, funcs);
 		}
     break;
 
   case 24:
 /* Line 1787 of yacc.c  */
-#line 292 "analis.y"
+#line 372 "analis.y"
     {
 			addVars(fm, "integer");
 		}
@@ -1844,7 +1929,7 @@ yyreduce:
 
   case 25:
 /* Line 1787 of yacc.c  */
-#line 296 "analis.y"
+#line 376 "analis.y"
     {
 			addVars(fm, "integer");
 		}
@@ -1852,7 +1937,7 @@ yyreduce:
 
   case 26:
 /* Line 1787 of yacc.c  */
-#line 300 "analis.y"
+#line 380 "analis.y"
     {
 			addVars(fm, "string");
 		}
@@ -1860,7 +1945,7 @@ yyreduce:
 
   case 27:
 /* Line 1787 of yacc.c  */
-#line 304 "analis.y"
+#line 384 "analis.y"
     {
 			addVars(fm, "string");
 		}
@@ -1868,7 +1953,7 @@ yyreduce:
 
   case 28:
 /* Line 1787 of yacc.c  */
-#line 308 "analis.y"
+#line 388 "analis.y"
     {
 			addVars(fm, "integer");
 		}
@@ -1876,7 +1961,7 @@ yyreduce:
 
   case 29:
 /* Line 1787 of yacc.c  */
-#line 312 "analis.y"
+#line 392 "analis.y"
     {
 			addVars(fm, "integer");
 		}
@@ -1884,7 +1969,7 @@ yyreduce:
 
   case 30:
 /* Line 1787 of yacc.c  */
-#line 316 "analis.y"
+#line 396 "analis.y"
     {
 			addVars(fm, "string");
 		}
@@ -1892,7 +1977,7 @@ yyreduce:
 
   case 31:
 /* Line 1787 of yacc.c  */
-#line 320 "analis.y"
+#line 400 "analis.y"
     {
 			addVars(fm, "string");
 		}
@@ -1900,7 +1985,7 @@ yyreduce:
 
   case 32:
 /* Line 1787 of yacc.c  */
-#line 325 "analis.y"
+#line 405 "analis.y"
     {
 			names.push_back((yyvsp[(3) - (3)].string));
 		}
@@ -1908,7 +1993,7 @@ yyreduce:
 
   case 33:
 /* Line 1787 of yacc.c  */
-#line 329 "analis.y"
+#line 409 "analis.y"
     {
 			names.push_back((yyvsp[(1) - (1)].string));
 		}
@@ -1916,7 +2001,7 @@ yyreduce:
 
   case 35:
 /* Line 1787 of yacc.c  */
-#line 336 "analis.y"
+#line 416 "analis.y"
     {
 			tmp = m;
 			m = fm;
@@ -1925,26 +2010,29 @@ yyreduce:
 
   case 36:
 /* Line 1787 of yacc.c  */
-#line 341 "analis.y"
+#line 421 "analis.y"
     {
-			char *where = itoa(ret_val.top());
+			info *inf = match_func_info(cur_func_decl);
+			char *where = inf->ret_val;
 			char *what = itoa(v.back());
 			move(what, where);
 			free(what);
-			free(where);
-			where = ret_addr.top();
-			char *new_name = itoa(init_const_string(""));
-			code << "INDIR " << where << ", " << new_name << endl;
-			goto_name(new_name);
+			where = inf->ret_addr;
+			//char *new_name = itoa(init_const_string(""));
+			//code << "INDIR " << where << ", " << new_name << endl;
+			//goto_name(new_name);
+			goto_name(where);
+			//cout << "inf: " << inf->ret_val << endl;
 			//free(where);
-			ret_val.pop();
-			ret_addr.pop();
+			//ret_val.pop();
+			//ret_addr.pop();
+			
 		}
     break;
 
   case 37:
 /* Line 1787 of yacc.c  */
-#line 356 "analis.y"
+#line 439 "analis.y"
     {
 			m = tmp;
 			fm.clear();
@@ -1953,7 +2041,7 @@ yyreduce:
 
   case 41:
 /* Line 1787 of yacc.c  */
-#line 366 "analis.y"
+#line 449 "analis.y"
     {
 			move((yyvsp[(3) - (4)].string), match((yyvsp[(1) - (4)].string)));
 		}
@@ -1961,7 +2049,7 @@ yyreduce:
 
   case 42:
 /* Line 1787 of yacc.c  */
-#line 371 "analis.y"
+#line 454 "analis.y"
     {
 			code << "READ " << match((yyvsp[(3) - (5)].string)) << endl;
 		}
@@ -1969,7 +2057,7 @@ yyreduce:
 
   case 43:
 /* Line 1787 of yacc.c  */
-#line 375 "analis.y"
+#line 458 "analis.y"
     {
 			code << "WRITE " << match((yyvsp[(3) - (5)].string)) << endl;
 		}
@@ -1977,7 +2065,7 @@ yyreduce:
 
   case 44:
 /* Line 1787 of yacc.c  */
-#line 379 "analis.y"
+#line 462 "analis.y"
     {
 			code << "WRITE " << (yyvsp[(3) - (5)].number) << endl;
 		}
@@ -1985,7 +2073,7 @@ yyreduce:
 
   case 45:
 /* Line 1787 of yacc.c  */
-#line 384 "analis.y"
+#line 467 "analis.y"
     {
 			char *name = match((yyvsp[(2) - (3)].string));
 			if (name == NULL) { code << "GOTO " << "" << endl; }
@@ -1995,7 +2083,7 @@ yyreduce:
 
   case 46:
 /* Line 1787 of yacc.c  */
-#line 391 "analis.y"
+#line 474 "analis.y"
     {			
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2005,7 +2093,7 @@ yyreduce:
 
   case 47:
 /* Line 1787 of yacc.c  */
-#line 397 "analis.y"
+#line 480 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2015,7 +2103,7 @@ yyreduce:
 
   case 48:
 /* Line 1787 of yacc.c  */
-#line 403 "analis.y"
+#line 486 "analis.y"
     {
 			char *name;
 			if (isString)
@@ -2033,7 +2121,7 @@ yyreduce:
 
   case 49:
 /* Line 1787 of yacc.c  */
-#line 417 "analis.y"
+#line 500 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2043,7 +2131,7 @@ yyreduce:
 
   case 50:
 /* Line 1787 of yacc.c  */
-#line 423 "analis.y"
+#line 506 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2053,7 +2141,7 @@ yyreduce:
 
   case 51:
 /* Line 1787 of yacc.c  */
-#line 429 "analis.y"
+#line 512 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2063,7 +2151,7 @@ yyreduce:
 
   case 52:
 /* Line 1787 of yacc.c  */
-#line 435 "analis.y"
+#line 518 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2073,7 +2161,7 @@ yyreduce:
 
   case 53:
 /* Line 1787 of yacc.c  */
-#line 441 "analis.y"
+#line 524 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2083,7 +2171,7 @@ yyreduce:
 
   case 54:
 /* Line 1787 of yacc.c  */
-#line 447 "analis.y"
+#line 530 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2093,7 +2181,7 @@ yyreduce:
 
   case 55:
 /* Line 1787 of yacc.c  */
-#line 453 "analis.y"
+#line 536 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2103,7 +2191,7 @@ yyreduce:
 
   case 56:
 /* Line 1787 of yacc.c  */
-#line 459 "analis.y"
+#line 542 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2113,7 +2201,7 @@ yyreduce:
 
   case 57:
 /* Line 1787 of yacc.c  */
-#line 465 "analis.y"
+#line 548 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2123,7 +2211,7 @@ yyreduce:
 
   case 58:
 /* Line 1787 of yacc.c  */
-#line 471 "analis.y"
+#line 554 "analis.y"
     {
 			char *name = itoa(init_int(0));
 			(yyval.string) = name;
@@ -2133,7 +2221,7 @@ yyreduce:
 
   case 59:
 /* Line 1787 of yacc.c  */
-#line 477 "analis.y"
+#line 560 "analis.y"
     {
 			(yyval.string) = (yyvsp[(2) - (3)].string);
 		}
@@ -2141,7 +2229,7 @@ yyreduce:
 
   case 60:
 /* Line 1787 of yacc.c  */
-#line 481 "analis.y"
+#line 564 "analis.y"
     {
 			(yyval.string) = itoa(init_int((yyvsp[(1) - (1)].number)));
 		}
@@ -2149,7 +2237,7 @@ yyreduce:
 
   case 61:
 /* Line 1787 of yacc.c  */
-#line 485 "analis.y"
+#line 568 "analis.y"
     {			
 			int num = init_const_string((yyvsp[(1) - (1)].string));
 			char *name = itoa(num);
@@ -2159,7 +2247,7 @@ yyreduce:
 
   case 62:
 /* Line 1787 of yacc.c  */
-#line 491 "analis.y"
+#line 574 "analis.y"
     {		
 			char *new_name = itoa(init_const_string((yyvsp[(1) - (4)].string)));
 			int num = init_const_string("");
@@ -2171,7 +2259,7 @@ yyreduce:
 
   case 63:
 /* Line 1787 of yacc.c  */
-#line 499 "analis.y"
+#line 582 "analis.y"
     {
 			char *name = match((yyvsp[(1) - (1)].string));
 			if (strings.find(name) == strings.end())
@@ -2185,7 +2273,7 @@ yyreduce:
 
   case 64:
 /* Line 1787 of yacc.c  */
-#line 509 "analis.y"
+#line 592 "analis.y"
     {	
 			int num = init_const_string("");
 			char *name = itoa(num);
@@ -2196,20 +2284,21 @@ yyreduce:
 
   case 65:
 /* Line 1787 of yacc.c  */
-#line 516 "analis.y"
+#line 599 "analis.y"
     {
-			func_names.push((yyvsp[(1) - (2)].string));
-			curParam.push(func_info[(yyvsp[(1) - (2)].string)]+1);
-			types.push(func_type[(yyvsp[(1) - (2)].string)]);
+			//func_names.push($1);
+			infoes.push(match_func_info((yyvsp[(1) - (2)].string)));
+			curParam.push(infoes.top()->first);
 		}
     break;
 
   case 66:
 /* Line 1787 of yacc.c  */
-#line 522 "analis.y"
+#line 605 "analis.y"
     {
 			int num;
-			if (types.top() == "string")
+			info *inf = infoes.top();
+			if (inf->type == "string")
 			{
 				num = init_const_string("");
 			}
@@ -2217,23 +2306,27 @@ yyreduce:
 			{
 				num = init_int(0);
 			}
-			ret_val.push(num);
+			//ret_val.push(num);
 			char *res_name = itoa(num);
 			(yyval.string) = res_name;
-			char *name = itoa(func_info[func_names.top()]);
-			ret_addr.push(name);
-			//ret_addr.top()[0] = 'b';
+			char *label_back = get_label();
+			char *name = itoa(init_const_string(label_back));
+			move(name, inf->ret_addr);
+			goto_label(match_func_beg(inf->name));
+			set_label(label_back);
+			move(inf->ret_val, res_name);
 			curParam.pop();
-			func_names.pop();
-			types.pop();
+			infoes.pop();
 		}
     break;
 
   case 67:
 /* Line 1787 of yacc.c  */
-#line 544 "analis.y"
+#line 630 "analis.y"
     {
-			char *name = itoa(v.back());
+			//char *name = itoa(v.back());
+			char *name = (yyvsp[(3) - (3)].string);
+			(yyval.string) = (yyvsp[(3) - (3)].string);
 			char *dest = itoa(curParam.top());
 			move(name, dest);
 			free(dest);
@@ -2243,9 +2336,11 @@ yyreduce:
 
   case 68:
 /* Line 1787 of yacc.c  */
-#line 552 "analis.y"
+#line 640 "analis.y"
     {
-			char *name = itoa(v.back());
+			//char *name = itoa(v.back());
+			char *name = (yyvsp[(1) - (1)].string);
+			(yyval.string) = (yyvsp[(1) - (1)].string);
 			char *dest = itoa(curParam.top());
 			move(name, dest);
 			free(dest);
@@ -2255,7 +2350,7 @@ yyreduce:
 
   case 71:
 /* Line 1787 of yacc.c  */
-#line 564 "analis.y"
+#line 654 "analis.y"
     {
 			char *name_var = itoa(v.back());
 			char *name_label = get_label();
@@ -2272,7 +2367,7 @@ yyreduce:
 
   case 72:
 /* Line 1787 of yacc.c  */
-#line 577 "analis.y"
+#line 667 "analis.y"
     {
 			char *name_label = get_label();
 			code << "GOTO " << name_label << endl;
@@ -2287,7 +2382,7 @@ yyreduce:
 
   case 73:
 /* Line 1787 of yacc.c  */
-#line 588 "analis.y"
+#line 678 "analis.y"
     {
 			char *name_label = itoa(if_counter.top());
 			name_label[0] = 'b';
@@ -2298,7 +2393,7 @@ yyreduce:
 
   case 74:
 /* Line 1787 of yacc.c  */
-#line 595 "analis.y"
+#line 685 "analis.y"
     {
 			char *name = get_label();
 			while_counter.push(num_label);
@@ -2308,7 +2403,7 @@ yyreduce:
 
   case 75:
 /* Line 1787 of yacc.c  */
-#line 601 "analis.y"
+#line 691 "analis.y"
     {
 			char *var_name = itoa(v.back());
 			char *name = itoa(init_int(0));
@@ -2325,7 +2420,7 @@ yyreduce:
 
   case 76:
 /* Line 1787 of yacc.c  */
-#line 614 "analis.y"
+#line 704 "analis.y"
     {
 			char *first = itoa(while_counter.top());
 			while_counter.pop();
@@ -2342,7 +2437,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 2346 "analis.tab.c"
+#line 2441 "analis.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2572,6 +2667,6 @@ yyreturn:
 
 
 /* Line 2048 of yacc.c  */
-#line 629 "analis.y"
+#line 719 "analis.y"
 
 

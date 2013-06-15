@@ -11,7 +11,7 @@
 
 using namespace std;
 
-ostringstream code;
+ostringstream code, funcs;
 vector<int> v;
 map<char *, char *> m;
 vector<char *> names;
@@ -19,19 +19,15 @@ int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
 stack<int> while_counter;
-map<char *, vector<int *> >funcs;
+//map<char *, vector<int *> >funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
-map<char *, int> func_info;
-stack<int> ret_val;
-stack<char *> ret_addr;
 set<const char *> strings;
 bool isString = false;
 stack<char *> func_names;
 stack<int> curParam;
-map<char *, char *> func_type;
-stack<char *> types;
+char *cur_func_decl = NULL;
 
 extern "C"
 {
@@ -51,6 +47,54 @@ void yyerror(const char *s)
 {
 	return 1;
 }*/
+
+void swap(ostringstream &stream1, ostringstream &stream2)
+{
+	ostringstream s;
+	s << stream1.str();
+	stream2.str(stream1.str());
+	stream2.str(s.str());
+	/*string s = stream1.str();
+	stream1.str(stream2.str());
+	stream2.str(s);*/
+}
+
+class info
+{
+public:
+	info(const char *name, const char *ret_addr, const char *ret_val, int first)
+	{
+		this->ret_addr = strdup(ret_addr);
+		this->ret_val = strdup(ret_val);
+		this->name = strdup(name);
+		type = NULL;
+		this->first = first;
+	}
+	info(const char *name, const char *ret_addr, const char *ret_val, const char *type, int first)
+	{
+		this->ret_addr = strdup(ret_addr);
+		this->ret_val = strdup(ret_val);
+		this->name = strdup(name);
+		this->first = first;
+		this->type = strdup(type);
+	}
+	~info()
+	{
+		free(name);
+		free(ret_addr);
+		free(ret_val);
+		free(type);
+	}
+	char *name;
+	char *ret_addr;
+	char *ret_val;
+	char *type;
+	int first;
+};
+
+map<char *, info *> func_info;
+stack<info *> infoes;
+
 void move(char *name1, char *name2)
 {
 	code << "MOVE " << name1 << ", " << name2 << endl;
@@ -101,6 +145,30 @@ char *match(const char *s)
 	}
 	return NULL;
 }
+char *match_func_beg(const char *s)
+{
+	for (map<char *, char *>::iterator i = func_beg.begin(); i != func_beg.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
+info *match_func_info(const char *s)
+{
+	for (map<char *, info *>::iterator i = func_info.begin(); i != func_info.end(); i++)
+	{
+		char *first = (*i).first;
+		if (!strcmp(first, s))
+		{
+			return (*i).second;
+		}
+	}
+	return NULL;
+}
 char *match_ref(const char *internal_name)
 {
 	for (map<char *, char *>::iterator i = refs.begin(); i != refs.end(); i++)
@@ -138,7 +206,8 @@ int init_const_string(const char *value)
 	}
 	else
 	{
-		cout << "STRING " << get_name() << ", " << value << endl;
+		if (value[0] == '"') { cout << "STRING " << get_name() << ", " << value << endl; }
+		else { cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl; }
 	}
 	return v.back();
 }
@@ -190,9 +259,13 @@ void goto_label(const char *label)
 	
 int main()
 {
+	funcs << "STRING myVar, \"END\"" << endl;
+	funcs << "GOTO myVar" << endl;
 	v.push_back(0);
 	yyparse();
-	cout << code.str();
+	funcs << "LABEL END" << endl;
+	//cout << code.str();
+	cout << funcs.str();
 }
 %}
 
@@ -278,14 +351,21 @@ decl_label :	LABEL NAME SEMICOLON
 		;
 decl_func :	NAME COLON INTEGER OBRACE
 		{
+			swap(code, funcs);
 			char *name = get_label();
 			func_beg[$1] = name;
 			set_label(name);
-			ret_val.push(init_int(0));
-			ret_addr.push(itoa(init_const_string("")));
-			func_info[$1] = v.back();
+			char *ret_val = itoa(init_int(0));
+			char *ret_addr = itoa(init_const_string(""));
+			info *inf = new info($1, ret_addr, ret_val, "integer", v.back() + 1);
+			func_info.insert(pair<char *, info *>($1, inf));		
+			//func_info[$1] = inf;
+			cur_func_decl = $1;
 		}		
 		chain_param CBRACE func_block
+		{
+			swap(code, funcs);
+		}
 		| NAME COLON STRING OBRACE chain_param CBRACE func_block
 		;
 chain_param : 	chain_param namelist_decl COLON INTEGER
@@ -339,18 +419,21 @@ func_block :	BLOCK
 		}		
 		program RETURN expr
 		{
-			char *where = itoa(ret_val.top());
+			info *inf = match_func_info(cur_func_decl);
+			char *where = inf->ret_val;
 			char *what = itoa(v.back());
 			move(what, where);
 			free(what);
-			free(where);
-			where = ret_addr.top();
-			char *new_name = itoa(init_const_string(""));
-			code << "INDIR " << where << ", " << new_name << endl;
-			goto_name(new_name);
+			where = inf->ret_addr;
+			//char *new_name = itoa(init_const_string(""));
+			//code << "INDIR " << where << ", " << new_name << endl;
+			//goto_name(new_name);
+			goto_name(where);
+			//cout << "inf: " << inf->ret_val << endl;
 			//free(where);
-			ret_val.pop();
-			ret_addr.pop();
+			//ret_val.pop();
+			//ret_addr.pop();
+			
 		}		
 		SEMICOLON KCOLB
 		{
@@ -514,14 +597,15 @@ expr : 		expr MUL expr
 		}
 		| NAME OBRACE
 		{
-			func_names.push($1);
-			curParam.push(func_info[$1]+1);
-			types.push(func_type[$1]);
+			//func_names.push($1);
+			infoes.push(match_func_info($1));
+			curParam.push(infoes.top()->first);
 		}
 		act_params CBRACE
 		{
 			int num;
-			if (types.top() == "string")
+			info *inf = infoes.top();
+			if (inf->type == "string")
 			{
 				num = init_const_string("");
 			}
@@ -529,20 +613,24 @@ expr : 		expr MUL expr
 			{
 				num = init_int(0);
 			}
-			ret_val.push(num);
+			//ret_val.push(num);
 			char *res_name = itoa(num);
 			$<string>$ = res_name;
-			char *name = itoa(func_info[func_names.top()]);
-			ret_addr.push(name);
-			//ret_addr.top()[0] = 'b';
+			char *label_back = get_label();
+			char *name = itoa(init_const_string(label_back));
+			move(name, inf->ret_addr);
+			goto_label(match_func_beg(inf->name));
+			set_label(label_back);
+			move(inf->ret_val, res_name);
 			curParam.pop();
-			func_names.pop();
-			types.pop();
+			infoes.pop();
 		}
 		;
 act_params :	act_params COMA expr
 		{
-			char *name = itoa(v.back());
+			//char *name = itoa(v.back());
+			char *name = $<string>3;
+			$<string>$ = $<string>3;
 			char *dest = itoa(curParam.top());
 			move(name, dest);
 			free(dest);
@@ -550,7 +638,9 @@ act_params :	act_params COMA expr
 		}
 		| expr
 		{
-			char *name = itoa(v.back());
+			//char *name = itoa(v.back());
+			char *name = $<string>1;
+			$<string>$ = $<string>1;
 			char *dest = itoa(curParam.top());
 			move(name, dest);
 			free(dest);
