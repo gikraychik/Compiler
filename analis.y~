@@ -28,6 +28,8 @@ bool isString = false;
 stack<char *> func_names;
 stack<int> curParam;
 char *cur_func_decl = NULL;
+int param_num = 0;
+stack<vector<char *> *> real_params;  //names
 
 extern "C"
 {
@@ -84,6 +86,7 @@ public:
 		free(ret_val);
 		free(type);
 	}
+	vector<int> v;
 	char *name;
 	char *ret_addr;
 	char *ret_val;
@@ -255,7 +258,20 @@ void goto_label(const char *label)
 	char *name = itoa(init_const_string(label));
 	goto_name(name);
 }
-	
+bool hasItem(int x, vector<int> &v)
+{
+	for (int i = 0; i < v.size(); i++)
+	{
+		if (v[i] == x) { return true; }
+	}
+	return false;
+}
+char *real_name(const char *name)
+{
+	char *res = match_ref(name);
+	if (res == NULL) { return NULL; }
+	return res;
+}
 int main()
 {
 	code = new ostringstream();
@@ -340,7 +356,7 @@ decl_ref :	NAME REF NAME COLON type SEMICOLON
 			m[$1] = internal_name;
 			char *image = match($3);
 			refs[internal_name] = image;
-			cout << "STRING " << internal_name << ", " << "\"" << image << "\"" << endl;
+			//cout << "STRING " << internal_name << ", " << "\"" << image << "\"" << endl;
 		}
 		;
 decl_label :	LABEL NAME SEMICOLON
@@ -352,6 +368,7 @@ decl_label :	LABEL NAME SEMICOLON
 		;
 decl_func :	NAME COLON INTEGER OBRACE
 		{
+			param_num = 0;
 			swap(code, funcs);
 			char *name = get_label();
 			func_beg[$1] = name;
@@ -362,14 +379,18 @@ decl_func :	NAME COLON INTEGER OBRACE
 			func_info.insert(pair<char *, info *>($1, inf));		
 			//func_info[$1] = inf;
 			cur_func_decl = $1;
+			infoes.push(inf);
 		}		
 		chain_param CBRACE func_block
 		{
 			swap(code, funcs);
+			infoes.pop();
+			param_num = 0;
 		}
 		| NAME COLON STRING OBRACE chain_param CBRACE func_block
 		;
-chain_param : 	chain_param namelist_decl COLON INTEGER
+chain_param : 	/* empty */
+		| chain_param namelist_decl COLON INTEGER
 		{
 			addVars(fm, "integer");
 		}
@@ -385,6 +406,40 @@ chain_param : 	chain_param namelist_decl COLON INTEGER
 		{
 			addVars(fm, "string");
 		}
+		| chain_param NAME REF COLON INTEGER SEMICOLON
+		{
+			names.push_back($2);
+			info *inf = infoes.top();
+			inf->v.push_back(param_num);
+			param_num++;
+			addVars(fm, "integer");
+		}
+		| chain_param NAME REF COLON INTEGER
+		{
+			names.push_back($2);
+			info *inf = infoes.top();
+			inf->v.push_back(param_num);
+			param_num++;
+			addVars(fm, "integer");
+		}
+		| chain_param NAME REF COLON STRING
+		| NAME REF COLON INTEGER
+		{
+			names.push_back($2);
+			info *inf = infoes.top();
+			inf->v.push_back(param_num);
+			param_num++;
+			addVars(fm, "integer");
+		}
+		| NAME REF COLON INTEGER SEMICOLON
+		{
+			names.push_back($2);
+			info *inf = infoes.top();
+			inf->v.push_back(param_num);
+			param_num++;
+			addVars(fm, "integer");
+		}
+		| NAME REF COLON STRING
 		| namelist_decl COLON INTEGER SEMICOLON
 		{
 			addVars(fm, "integer");
@@ -405,10 +460,12 @@ chain_param : 	chain_param namelist_decl COLON INTEGER
 namelist_decl : namelist_decl COMA NAME
 		{
 			names.push_back($3);
+			param_num++;
 		}
 		| NAME
 		{
 			names.push_back($1);
+			param_num++;
 		}
 		;
 block :		BLOCK commands KCOLB
@@ -601,6 +658,9 @@ expr : 		expr MUL expr
 			//func_names.push($1);
 			infoes.push(match_func_info($1));
 			curParam.push(infoes.top()->first);
+			vector<char *> *v = new vector<char *>();
+			real_params.push(v);
+			param_num = 0;
 		}
 		act_params CBRACE
 		{
@@ -623,16 +683,35 @@ expr : 		expr MUL expr
 			goto_label(match_func_beg(inf->name));
 			set_label(label_back);
 			move(inf->ret_val, res_name);
+			vector<char *> *v = real_params.top();
+			for (int i = 0; i < v->size(); i++)
+			{
+				char *dest = itoa((inf->v[i])+inf->first);  //
+				move(dest, v->at(i));
+				free(dest);
+				free(v->at(i));
+			}
+			delete v;
+			real_params.pop();
 			curParam.pop();
 			infoes.pop();
+			param_num = 0;
 		}
 		;
-act_params :	act_params COMA expr
+act_params :	/* empty */
+		| act_params COMA expr
 		{
 			//char *name = itoa(v.back());
+			vector<char *> *v = real_params.top();
+			info *inf = infoes.top();
 			char *name = $<string>3;
 			$<string>$ = $<string>3;
 			char *dest = itoa(curParam.top());
+			if (hasItem(param_num, inf->v))
+			{
+				v->push_back(strdup(name));
+			}
+			param_num++;
 			move(name, dest);
 			free(dest);
 			curParam.top()++;
@@ -640,9 +719,16 @@ act_params :	act_params COMA expr
 		| expr
 		{
 			//char *name = itoa(v.back());
+			vector<char *> *v = real_params.top();
 			char *name = $<string>1;
 			$<string>$ = $<string>1;
 			char *dest = itoa(curParam.top());
+			info *inf = infoes.top();
+			if (hasItem(param_num, inf->v))
+			{
+				v->push_back(strdup(name));
+			}
+			param_num++;
 			move(name, dest);
 			free(dest);
 			curParam.top()++;
@@ -659,7 +745,9 @@ cond :		IF expr
 			free(name_var);
 			//free(name_label);
 			//name_label = get_label();
-			*code << "GOTO " << get_label() << endl;
+			char *name = get_label();
+			//*code << "GOTO " << name << endl;
+			goto_label(name);
 			set_label(name_label);
 			//free(name_label);
 			if_counter.push(num_label);
@@ -667,7 +755,8 @@ cond :		IF expr
 		THEN block
 		{
 			char *name_label = get_label();
-			*code << "GOTO " << name_label << endl;
+			//*code << "GOTO " << name_label << endl;
+			goto_label(name_label);
 			int first = if_counter.top();
 			name_label = itoa(first);
 			name_label[0] = 'b';
@@ -709,7 +798,8 @@ cycle :		{
 			while_counter.pop();
 			first[0] = 'b';
 			second[0] = 'b';
-			*code << "GOTO " << second << endl;
+			//*code << "GOTO " << second << endl;
+			goto_label(second);
 			set_label(first);
 			free(first);
 			free(second);

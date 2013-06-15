@@ -7,6 +7,8 @@ Terminals unused in grammar
 
 
 State 1 conflicts: 1 shift/reduce
+State 74 conflicts: 1 shift/reduce
+State 106 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -46,129 +48,138 @@ Grammar
    21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param CBRACE func_block
    22          | NAME COLON STRING OBRACE chain_param CBRACE func_block
 
-   23 chain_param: chain_param namelist_decl COLON INTEGER
-   24            | chain_param namelist_decl COLON INTEGER SEMICOLON
-   25            | chain_param namelist_decl COLON STRING
-   26            | chain_param namelist_decl COLON STRING SEMICOLON
-   27            | namelist_decl COLON INTEGER SEMICOLON
-   28            | namelist_decl COLON INTEGER
-   29            | namelist_decl COLON STRING SEMICOLON
-   30            | namelist_decl COLON STRING
+   23 chain_param: /* empty */
+   24            | chain_param namelist_decl COLON INTEGER
+   25            | chain_param namelist_decl COLON INTEGER SEMICOLON
+   26            | chain_param namelist_decl COLON STRING
+   27            | chain_param namelist_decl COLON STRING SEMICOLON
+   28            | chain_param NAME REF COLON INTEGER SEMICOLON
+   29            | chain_param NAME REF COLON INTEGER
+   30            | chain_param NAME REF COLON STRING
+   31            | NAME REF COLON INTEGER
+   32            | NAME REF COLON INTEGER SEMICOLON
+   33            | NAME REF COLON STRING
+   34            | namelist_decl COLON INTEGER SEMICOLON
+   35            | namelist_decl COLON INTEGER
+   36            | namelist_decl COLON STRING SEMICOLON
+   37            | namelist_decl COLON STRING
 
-   31 namelist_decl: namelist_decl COMA NAME
-   32              | NAME
+   38 namelist_decl: namelist_decl COMA NAME
+   39              | NAME
 
-   33 block: BLOCK commands KCOLB
+   40 block: BLOCK commands KCOLB
 
-   34 $@2: /* empty */
+   41 $@2: /* empty */
 
-   35 $@3: /* empty */
+   42 $@3: /* empty */
 
-   36 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON KCOLB
+   43 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON KCOLB
 
-   37 action: assign
-   38       | io
-   39       | goto
+   44 action: assign
+   45       | io
+   46       | goto
 
-   40 assign: NAME ASSIGN expr SEMICOLON
+   47 assign: NAME ASSIGN expr SEMICOLON
 
-   41 io: READ OBRACE NAME CBRACE SEMICOLON
-   42   | WRITE OBRACE NAME CBRACE SEMICOLON
-   43   | WRITE OBRACE NUMBER CBRACE SEMICOLON
+   48 io: READ OBRACE NAME CBRACE SEMICOLON
+   49   | WRITE OBRACE NAME CBRACE SEMICOLON
+   50   | WRITE OBRACE NUMBER CBRACE SEMICOLON
 
-   44 goto: GOTO NAME SEMICOLON
+   51 goto: GOTO NAME SEMICOLON
 
-   45 expr: expr MUL expr
-   46     | expr DIV expr
-   47     | expr ADD expr
-   48     | expr SUB expr
-   49     | expr AND expr
-   50     | expr OR expr
-   51     | expr LT expr
-   52     | expr LE expr
-   53     | expr GT expr
-   54     | expr GE expr
-   55     | expr EQ expr
-   56     | expr NE expr
-   57     | NOT expr
-   58     | OBRACE expr CBRACE
-   59     | NUMBER
-   60     | STRINGCONST
-   61     | STRINGCONST RECOPENBRACE expr RECCLOSEBRACE
-   62     | NAME
-   63     | NAME RECOPENBRACE expr RECCLOSEBRACE
+   52 expr: expr MUL expr
+   53     | expr DIV expr
+   54     | expr ADD expr
+   55     | expr SUB expr
+   56     | expr AND expr
+   57     | expr OR expr
+   58     | expr LT expr
+   59     | expr LE expr
+   60     | expr GT expr
+   61     | expr GE expr
+   62     | expr EQ expr
+   63     | expr NE expr
+   64     | NOT expr
+   65     | OBRACE expr CBRACE
+   66     | NUMBER
+   67     | STRINGCONST
+   68     | STRINGCONST RECOPENBRACE expr RECCLOSEBRACE
+   69     | NAME
+   70     | NAME RECOPENBRACE expr RECCLOSEBRACE
 
-   64 $@4: /* empty */
+   71 $@4: /* empty */
 
-   65 expr: NAME OBRACE $@4 act_params CBRACE
+   72 expr: NAME OBRACE $@4 act_params CBRACE
 
-   66 act_params: act_params COMA expr
-   67           | expr
+   73 act_params: /* empty */
+   74           | act_params COMA expr
+   75           | expr
 
-   68 control: cond
-   69        | cycle
+   76 control: cond
+   77        | cycle
 
-   70 $@5: /* empty */
+   78 $@5: /* empty */
 
-   71 $@6: /* empty */
+   79 $@6: /* empty */
 
-   72 cond: IF expr $@5 THEN block $@6 ELSE block
+   80 cond: IF expr $@5 THEN block $@6 ELSE block
 
-   73 $@7: /* empty */
+   81 $@7: /* empty */
 
-   74 $@8: /* empty */
+   82 $@8: /* empty */
 
-   75 cycle: $@7 WHILE expr $@8 LOOP commands POOL
+   83 cycle: $@7 WHILE expr $@8 LOOP commands POOL
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
 error (256)
-NUMBER (258) 43 59
-NAME (259) 16 17 18 19 21 22 31 32 40 41 42 44 62 63 65
+NUMBER (258) 50 66
+NAME (259) 16 17 18 19 21 22 28 29 30 31 32 33 38 39 47 48 49 51 69
+    70 72
 LABELNAME (260)
-REF (261) 18
-COLON (262) 14 15 18 21 22 23 24 25 26 27 28 29 30
-SEMICOLON (263) 14 15 18 19 24 26 27 29 36 40 41 42 43 44
+REF (261) 18 28 29 30 31 32 33
+COLON (262) 14 15 18 21 22 24 25 26 27 28 29 30 31 32 33 34 35 36 37
+SEMICOLON (263) 14 15 18 19 25 27 28 32 34 36 43 47 48 49 50 51
 DELIM (264)
-STRINGCONST (265) 60 61
+STRINGCONST (265) 67 68
 QUOTE (266)
-STRING (267) 12 14 22 25 26 29 30
-INTEGER (268) 13 15 21 23 24 27 28
-COMA (269) 16 31 66
-RETURN (270) 36
-ASSIGN (271) 40
-IF (272) 72
-WHILE (273) 75
-LOOP (274) 75
-POOL (275) 75
-READ (276) 41
-WRITE (277) 42 43
+STRING (267) 12 14 22 26 27 30 33 36 37
+INTEGER (268) 13 15 21 24 25 28 29 31 32 34 35
+COMA (269) 16 38 74
+RETURN (270) 43
+ASSIGN (271) 47
+IF (272) 80
+WHILE (273) 83
+LOOP (274) 83
+POOL (275) 83
+READ (276) 48
+WRITE (277) 49 50
 EOFF (278)
 LABEL (279) 19
-RECOPENBRACE (280) 61 63
-RECCLOSEBRACE (281) 61 63
-BLOCK (282) 33 36
-KCOLB (283) 33 36
-THEN (284) 72
-ELSE (285) 72
-GOTO (286) 44
-OBRACE (287) 21 22 41 42 43 58 65
-CBRACE (288) 21 22 41 42 43 58 65
-OR (289) 50
-AND (290) 49
-NOT (291) 57
-NE (292) 56
-EQ (293) 55
-GE (294) 54
-LE (295) 52
-GT (296) 53
-LT (297) 51
-SUB (298) 48
-ADD (299) 47
-DIV (300) 46
-MUL (301) 45
+RECOPENBRACE (280) 68 70
+RECCLOSEBRACE (281) 68 70
+BLOCK (282) 40 43
+KCOLB (283) 40 43
+THEN (284) 80
+ELSE (285) 80
+GOTO (286) 51
+OBRACE (287) 21 22 48 49 50 65 72
+CBRACE (288) 21 22 48 49 50 65 72
+OR (289) 57
+AND (290) 56
+NOT (291) 64
+NE (292) 63
+EQ (293) 62
+GE (294) 61
+LE (295) 59
+GT (296) 60
+LT (297) 58
+SUB (298) 55
+ADD (299) 54
+DIV (300) 53
+MUL (301) 52
 
 
 Nonterminals, with rules where they appear
@@ -176,9 +187,9 @@ Nonterminals, with rules where they appear
 $accept (47)
     on left: 0
 program (48)
-    on left: 1 2, on right: 0 36
+    on left: 1 2, on right: 0 43
 commands (49)
-    on left: 3 4, on right: 2 3 33 75
+    on left: 3 4, on right: 2 3 40 83
 command (50)
     on left: 5 6 7, on right: 3 4
 decl (51)
@@ -198,47 +209,48 @@ decl_func (57)
 $@1 (58)
     on left: 20, on right: 21
 chain_param (59)
-    on left: 23 24 25 26 27 28 29 30, on right: 21 22 23 24 25 26
+    on left: 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37, on right:
+    21 22 24 25 26 27 28 29 30
 namelist_decl (60)
-    on left: 31 32, on right: 23 24 25 26 27 28 29 30 31
+    on left: 38 39, on right: 24 25 26 27 34 35 36 37 38
 block (61)
-    on left: 33, on right: 72
+    on left: 40, on right: 80
 func_block (62)
-    on left: 36, on right: 21 22
+    on left: 43, on right: 21 22
 $@2 (63)
-    on left: 34, on right: 36
+    on left: 41, on right: 43
 $@3 (64)
-    on left: 35, on right: 36
+    on left: 42, on right: 43
 action (65)
-    on left: 37 38 39, on right: 6
+    on left: 44 45 46, on right: 6
 assign (66)
-    on left: 40, on right: 37
+    on left: 47, on right: 44
 io (67)
-    on left: 41 42 43, on right: 38
+    on left: 48 49 50, on right: 45
 goto (68)
-    on left: 44, on right: 39
+    on left: 51, on right: 46
 expr (69)
-    on left: 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62
-    63 65, on right: 36 40 45 46 47 48 49 50 51 52 53 54 55 56 57 58
-    61 63 66 67 72 75
+    on left: 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69
+    70 72, on right: 43 47 52 53 54 55 56 57 58 59 60 61 62 63 64 65
+    68 70 74 75 80 83
 $@4 (70)
-    on left: 64, on right: 65
-act_params (71)
-    on left: 66 67, on right: 65 66
-control (72)
-    on left: 68 69, on right: 7
-cond (73)
-    on left: 72, on right: 68
-$@5 (74)
-    on left: 70, on right: 72
-$@6 (75)
     on left: 71, on right: 72
+act_params (71)
+    on left: 73 74 75, on right: 72 74
+control (72)
+    on left: 76 77, on right: 7
+cond (73)
+    on left: 80, on right: 76
+$@5 (74)
+    on left: 78, on right: 80
+$@6 (75)
+    on left: 79, on right: 80
 cycle (76)
-    on left: 75, on right: 69
+    on left: 83, on right: 77
 $@7 (77)
-    on left: 73, on right: 75
+    on left: 81, on right: 83
 $@8 (78)
-    on left: 74, on right: 75
+    on left: 82, on right: 83
 
 
 state 0
@@ -252,7 +264,7 @@ state 0
     LABEL  shift, and go to state 5
     GOTO   shift, and go to state 6
 
-    WHILE     reduce using rule 73 ($@7)
+    WHILE     reduce using rule 81 ($@7)
     $default  reduce using rule 1 (program)
 
     program     go to state 7
@@ -280,7 +292,7 @@ state 1
    18 decl_ref: NAME . REF NAME COLON type SEMICOLON
    21 decl_func: NAME . COLON INTEGER OBRACE $@1 chain_param CBRACE func_block
    22          | NAME . COLON STRING OBRACE chain_param CBRACE func_block
-   40 assign: NAME . ASSIGN expr SEMICOLON
+   47 assign: NAME . ASSIGN expr SEMICOLON
 
     REF     shift, and go to state 24
     COLON   shift, and go to state 25
@@ -292,7 +304,7 @@ state 1
 
 state 2
 
-   72 cond: IF . expr $@5 THEN block $@6 ELSE block
+   80 cond: IF . expr $@5 THEN block $@6 ELSE block
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -305,15 +317,15 @@ state 2
 
 state 3
 
-   41 io: READ . OBRACE NAME CBRACE SEMICOLON
+   48 io: READ . OBRACE NAME CBRACE SEMICOLON
 
     OBRACE  shift, and go to state 33
 
 
 state 4
 
-   42 io: WRITE . OBRACE NAME CBRACE SEMICOLON
-   43   | WRITE . OBRACE NUMBER CBRACE SEMICOLON
+   49 io: WRITE . OBRACE NAME CBRACE SEMICOLON
+   50   | WRITE . OBRACE NUMBER CBRACE SEMICOLON
 
     OBRACE  shift, and go to state 34
 
@@ -327,7 +339,7 @@ state 5
 
 state 6
 
-   44 goto: GOTO . NAME SEMICOLON
+   51 goto: GOTO . NAME SEMICOLON
 
     NAME  shift, and go to state 36
 
@@ -351,7 +363,7 @@ state 8
     LABEL  shift, and go to state 5
     GOTO   shift, and go to state 6
 
-    WHILE     reduce using rule 73 ($@7)
+    WHILE     reduce using rule 81 ($@7)
     $default  reduce using rule 2 (program)
 
     command     go to state 38
@@ -432,23 +444,23 @@ state 16
 
 state 17
 
-   37 action: assign .
+   44 action: assign .
 
-    $default  reduce using rule 37 (action)
+    $default  reduce using rule 44 (action)
 
 
 state 18
 
-   38 action: io .
+   45 action: io .
 
-    $default  reduce using rule 38 (action)
+    $default  reduce using rule 45 (action)
 
 
 state 19
 
-   39 action: goto .
+   46 action: goto .
 
-    $default  reduce using rule 39 (action)
+    $default  reduce using rule 46 (action)
 
 
 state 20
@@ -460,21 +472,21 @@ state 20
 
 state 21
 
-   68 control: cond .
+   76 control: cond .
 
-    $default  reduce using rule 68 (control)
+    $default  reduce using rule 76 (control)
 
 
 state 22
 
-   69 control: cycle .
+   77 control: cycle .
 
-    $default  reduce using rule 69 (control)
+    $default  reduce using rule 77 (control)
 
 
 state 23
 
-   75 cycle: $@7 . WHILE expr $@8 LOOP commands POOL
+   83 cycle: $@7 . WHILE expr $@8 LOOP commands POOL
 
     WHILE  shift, and go to state 41
 
@@ -497,7 +509,7 @@ state 25
 
 state 26
 
-   40 assign: NAME ASSIGN . expr SEMICOLON
+   47 assign: NAME ASSIGN . expr SEMICOLON
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -510,36 +522,36 @@ state 26
 
 state 27
 
-   59 expr: NUMBER .
+   66 expr: NUMBER .
 
-    $default  reduce using rule 59 (expr)
+    $default  reduce using rule 66 (expr)
 
 
 state 28
 
-   62 expr: NAME .
-   63     | NAME . RECOPENBRACE expr RECCLOSEBRACE
-   65     | NAME . OBRACE $@4 act_params CBRACE
+   69 expr: NAME .
+   70     | NAME . RECOPENBRACE expr RECCLOSEBRACE
+   72     | NAME . OBRACE $@4 act_params CBRACE
 
     RECOPENBRACE  shift, and go to state 46
     OBRACE        shift, and go to state 47
 
-    $default  reduce using rule 62 (expr)
+    $default  reduce using rule 69 (expr)
 
 
 state 29
 
-   60 expr: STRINGCONST .
-   61     | STRINGCONST . RECOPENBRACE expr RECCLOSEBRACE
+   67 expr: STRINGCONST .
+   68     | STRINGCONST . RECOPENBRACE expr RECCLOSEBRACE
 
     RECOPENBRACE  shift, and go to state 48
 
-    $default  reduce using rule 60 (expr)
+    $default  reduce using rule 67 (expr)
 
 
 state 30
 
-   58 expr: OBRACE . expr CBRACE
+   65 expr: OBRACE . expr CBRACE
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -552,7 +564,7 @@ state 30
 
 state 31
 
-   57 expr: NOT . expr
+   64 expr: NOT . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -565,19 +577,19 @@ state 31
 
 state 32
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   72 cond: IF expr . $@5 THEN block $@6 ELSE block
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   80 cond: IF expr . $@5 THEN block $@6 ELSE block
 
     OR   shift, and go to state 51
     AND  shift, and go to state 52
@@ -592,22 +604,22 @@ state 32
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 70 ($@5)
+    $default  reduce using rule 78 ($@5)
 
     $@5  go to state 63
 
 
 state 33
 
-   41 io: READ OBRACE . NAME CBRACE SEMICOLON
+   48 io: READ OBRACE . NAME CBRACE SEMICOLON
 
     NAME  shift, and go to state 64
 
 
 state 34
 
-   42 io: WRITE OBRACE . NAME CBRACE SEMICOLON
-   43   | WRITE OBRACE . NUMBER CBRACE SEMICOLON
+   49 io: WRITE OBRACE . NAME CBRACE SEMICOLON
+   50   | WRITE OBRACE . NUMBER CBRACE SEMICOLON
 
     NUMBER  shift, and go to state 65
     NAME    shift, and go to state 66
@@ -622,7 +634,7 @@ state 35
 
 state 36
 
-   44 goto: GOTO NAME . SEMICOLON
+   51 goto: GOTO NAME . SEMICOLON
 
     SEMICOLON  shift, and go to state 68
 
@@ -659,7 +671,7 @@ state 40
 
 state 41
 
-   75 cycle: $@7 WHILE . expr $@8 LOOP commands POOL
+   83 cycle: $@7 WHILE . expr $@8 LOOP commands POOL
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -693,19 +705,19 @@ state 44
 
 state 45
 
-   40 assign: NAME ASSIGN expr . SEMICOLON
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   47 assign: NAME ASSIGN expr . SEMICOLON
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
     SEMICOLON  shift, and go to state 76
     OR         shift, and go to state 51
@@ -724,7 +736,7 @@ state 45
 
 state 46
 
-   63 expr: NAME RECOPENBRACE . expr RECCLOSEBRACE
+   70 expr: NAME RECOPENBRACE . expr RECCLOSEBRACE
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -737,16 +749,16 @@ state 46
 
 state 47
 
-   65 expr: NAME OBRACE . $@4 act_params CBRACE
+   72 expr: NAME OBRACE . $@4 act_params CBRACE
 
-    $default  reduce using rule 64 ($@4)
+    $default  reduce using rule 71 ($@4)
 
     $@4  go to state 78
 
 
 state 48
 
-   61 expr: STRINGCONST RECOPENBRACE . expr RECCLOSEBRACE
+   68 expr: STRINGCONST RECOPENBRACE . expr RECCLOSEBRACE
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -759,19 +771,19 @@ state 48
 
 state 49
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   58     | OBRACE expr . CBRACE
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   65     | OBRACE expr . CBRACE
 
     CBRACE  shift, and go to state 80
     OR      shift, and go to state 51
@@ -790,19 +802,19 @@ state 49
 
 state 50
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   57     | NOT expr .
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   64     | NOT expr .
 
     NE   shift, and go to state 53
     EQ   shift, and go to state 54
@@ -815,12 +827,12 @@ state 50
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 57 (expr)
+    $default  reduce using rule 64 (expr)
 
 
 state 51
 
-   50 expr: expr OR . expr
+   57 expr: expr OR . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -833,7 +845,7 @@ state 51
 
 state 52
 
-   49 expr: expr AND . expr
+   56 expr: expr AND . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -846,7 +858,7 @@ state 52
 
 state 53
 
-   56 expr: expr NE . expr
+   63 expr: expr NE . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -859,7 +871,7 @@ state 53
 
 state 54
 
-   55 expr: expr EQ . expr
+   62 expr: expr EQ . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -872,7 +884,7 @@ state 54
 
 state 55
 
-   54 expr: expr GE . expr
+   61 expr: expr GE . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -885,7 +897,7 @@ state 55
 
 state 56
 
-   52 expr: expr LE . expr
+   59 expr: expr LE . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -898,7 +910,7 @@ state 56
 
 state 57
 
-   53 expr: expr GT . expr
+   60 expr: expr GT . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -911,7 +923,7 @@ state 57
 
 state 58
 
-   51 expr: expr LT . expr
+   58 expr: expr LT . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -924,7 +936,7 @@ state 58
 
 state 59
 
-   48 expr: expr SUB . expr
+   55 expr: expr SUB . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -937,7 +949,7 @@ state 59
 
 state 60
 
-   47 expr: expr ADD . expr
+   54 expr: expr ADD . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -950,7 +962,7 @@ state 60
 
 state 61
 
-   46 expr: expr DIV . expr
+   53 expr: expr DIV . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -963,7 +975,7 @@ state 61
 
 state 62
 
-   45 expr: expr MUL . expr
+   52 expr: expr MUL . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -976,28 +988,28 @@ state 62
 
 state 63
 
-   72 cond: IF expr $@5 . THEN block $@6 ELSE block
+   80 cond: IF expr $@5 . THEN block $@6 ELSE block
 
     THEN  shift, and go to state 93
 
 
 state 64
 
-   41 io: READ OBRACE NAME . CBRACE SEMICOLON
+   48 io: READ OBRACE NAME . CBRACE SEMICOLON
 
     CBRACE  shift, and go to state 94
 
 
 state 65
 
-   43 io: WRITE OBRACE NUMBER . CBRACE SEMICOLON
+   50 io: WRITE OBRACE NUMBER . CBRACE SEMICOLON
 
     CBRACE  shift, and go to state 95
 
 
 state 66
 
-   42 io: WRITE OBRACE NAME . CBRACE SEMICOLON
+   49 io: WRITE OBRACE NAME . CBRACE SEMICOLON
 
     CBRACE  shift, and go to state 96
 
@@ -1011,9 +1023,9 @@ state 67
 
 state 68
 
-   44 goto: GOTO NAME SEMICOLON .
+   51 goto: GOTO NAME SEMICOLON .
 
-    $default  reduce using rule 44 (goto)
+    $default  reduce using rule 51 (goto)
 
 
 state 69
@@ -1039,19 +1051,19 @@ state 71
 
 state 72
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   75 cycle: $@7 WHILE expr . $@8 LOOP commands POOL
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   83 cycle: $@7 WHILE expr . $@8 LOOP commands POOL
 
     OR   shift, and go to state 51
     AND  shift, and go to state 52
@@ -1066,7 +1078,7 @@ state 72
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 74 ($@8)
+    $default  reduce using rule 82 ($@8)
 
     $@8  go to state 99
 
@@ -1087,6 +1099,9 @@ state 74
 
     NAME  shift, and go to state 103
 
+    NAME      [reduce using rule 23 (chain_param)]
+    $default  reduce using rule 23 (chain_param)
+
     chain_param    go to state 104
     namelist_decl  go to state 105
 
@@ -1102,26 +1117,26 @@ state 75
 
 state 76
 
-   40 assign: NAME ASSIGN expr SEMICOLON .
+   47 assign: NAME ASSIGN expr SEMICOLON .
 
-    $default  reduce using rule 40 (assign)
+    $default  reduce using rule 47 (assign)
 
 
 state 77
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   63     | NAME RECOPENBRACE expr . RECCLOSEBRACE
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   70     | NAME RECOPENBRACE expr . RECCLOSEBRACE
 
     RECCLOSEBRACE  shift, and go to state 107
     OR             shift, and go to state 51
@@ -1140,7 +1155,7 @@ state 77
 
 state 78
 
-   65 expr: NAME OBRACE $@4 . act_params CBRACE
+   72 expr: NAME OBRACE $@4 . act_params CBRACE
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -1148,25 +1163,27 @@ state 78
     OBRACE       shift, and go to state 30
     NOT          shift, and go to state 31
 
+    $default  reduce using rule 73 (act_params)
+
     expr        go to state 108
     act_params  go to state 109
 
 
 state 79
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   61     | STRINGCONST RECOPENBRACE expr . RECCLOSEBRACE
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   68     | STRINGCONST RECOPENBRACE expr . RECCLOSEBRACE
 
     RECCLOSEBRACE  shift, and go to state 110
     OR             shift, and go to state 51
@@ -1185,26 +1202,26 @@ state 79
 
 state 80
 
-   58 expr: OBRACE expr CBRACE .
+   65 expr: OBRACE expr CBRACE .
 
-    $default  reduce using rule 58 (expr)
+    $default  reduce using rule 65 (expr)
 
 
 state 81
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   50     | expr OR expr .
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   57     | expr OR expr .
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
     NE   shift, and go to state 53
     EQ   shift, and go to state 54
@@ -1217,24 +1234,24 @@ state 81
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 50 (expr)
+    $default  reduce using rule 57 (expr)
 
 
 state 82
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   49     | expr AND expr .
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   56     | expr AND expr .
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
     NE   shift, and go to state 53
     EQ   shift, and go to state 54
@@ -1242,30 +1259,6 @@ state 82
     LE   shift, and go to state 56
     GT   shift, and go to state 57
     LT   shift, and go to state 58
-    SUB  shift, and go to state 59
-    ADD  shift, and go to state 60
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
-
-    $default  reduce using rule 49 (expr)
-
-
-state 83
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   56     | expr NE expr .
-
     SUB  shift, and go to state 59
     ADD  shift, and go to state 60
     DIV  shift, and go to state 61
@@ -1274,211 +1267,235 @@ state 83
     $default  reduce using rule 56 (expr)
 
 
-state 84
+state 83
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   55     | expr EQ expr .
-   56     | expr . NE expr
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   63     | expr NE expr .
 
     SUB  shift, and go to state 59
     ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 63 (expr)
+
+
+state 84
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   62     | expr EQ expr .
+   63     | expr . NE expr
+
+    SUB  shift, and go to state 59
+    ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 62 (expr)
+
+
+state 85
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   61     | expr GE expr .
+   62     | expr . EQ expr
+   63     | expr . NE expr
+
+    SUB  shift, and go to state 59
+    ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 61 (expr)
+
+
+state 86
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   59     | expr LE expr .
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+
+    SUB  shift, and go to state 59
+    ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 59 (expr)
+
+
+state 87
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   60     | expr GT expr .
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+
+    SUB  shift, and go to state 59
+    ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 60 (expr)
+
+
+state 88
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   58     | expr LT expr .
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+
+    SUB  shift, and go to state 59
+    ADD  shift, and go to state 60
+    DIV  shift, and go to state 61
+    MUL  shift, and go to state 62
+
+    $default  reduce using rule 58 (expr)
+
+
+state 89
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   55     | expr SUB expr .
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
     $default  reduce using rule 55 (expr)
 
 
-state 85
+state 90
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   54     | expr GE expr .
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   54     | expr ADD expr .
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
-    SUB  shift, and go to state 59
-    ADD  shift, and go to state 60
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
     $default  reduce using rule 54 (expr)
 
 
-state 86
+state 91
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   52     | expr LE expr .
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    SUB  shift, and go to state 59
-    ADD  shift, and go to state 60
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
-
-    $default  reduce using rule 52 (expr)
-
-
-state 87
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   53     | expr GT expr .
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    SUB  shift, and go to state 59
-    ADD  shift, and go to state 60
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   53     | expr DIV expr .
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
     $default  reduce using rule 53 (expr)
 
 
-state 88
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   51     | expr LT expr .
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    SUB  shift, and go to state 59
-    ADD  shift, and go to state 60
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
-
-    $default  reduce using rule 51 (expr)
-
-
-state 89
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   48     | expr SUB expr .
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
-
-    $default  reduce using rule 48 (expr)
-
-
-state 90
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   47     | expr ADD expr .
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    DIV  shift, and go to state 61
-    MUL  shift, and go to state 62
-
-    $default  reduce using rule 47 (expr)
-
-
-state 91
-
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   46     | expr DIV expr .
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-
-    $default  reduce using rule 46 (expr)
-
-
 state 92
 
-   45 expr: expr . MUL expr
-   45     | expr MUL expr .
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   52 expr: expr . MUL expr
+   52     | expr MUL expr .
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
-    $default  reduce using rule 45 (expr)
+    $default  reduce using rule 52 (expr)
 
 
 state 93
 
-   72 cond: IF expr $@5 THEN . block $@6 ELSE block
+   80 cond: IF expr $@5 THEN . block $@6 ELSE block
 
     BLOCK  shift, and go to state 111
 
@@ -1487,21 +1504,21 @@ state 93
 
 state 94
 
-   41 io: READ OBRACE NAME CBRACE . SEMICOLON
+   48 io: READ OBRACE NAME CBRACE . SEMICOLON
 
     SEMICOLON  shift, and go to state 113
 
 
 state 95
 
-   43 io: WRITE OBRACE NUMBER CBRACE . SEMICOLON
+   50 io: WRITE OBRACE NUMBER CBRACE . SEMICOLON
 
     SEMICOLON  shift, and go to state 114
 
 
 state 96
 
-   42 io: WRITE OBRACE NAME CBRACE . SEMICOLON
+   49 io: WRITE OBRACE NAME CBRACE . SEMICOLON
 
     SEMICOLON  shift, and go to state 115
 
@@ -1522,7 +1539,7 @@ state 98
 
 state 99
 
-   75 cycle: $@7 WHILE expr $@8 . LOOP commands POOL
+   83 cycle: $@7 WHILE expr $@8 . LOOP commands POOL
 
     LOOP  shift, and go to state 116
 
@@ -1550,35 +1567,43 @@ state 102
 
 state 103
 
-   32 namelist_decl: NAME .
+   31 chain_param: NAME . REF COLON INTEGER
+   32            | NAME . REF COLON INTEGER SEMICOLON
+   33            | NAME . REF COLON STRING
+   39 namelist_decl: NAME .
 
-    $default  reduce using rule 32 (namelist_decl)
+    REF  shift, and go to state 118
+
+    $default  reduce using rule 39 (namelist_decl)
 
 
 state 104
 
    22 decl_func: NAME COLON STRING OBRACE chain_param . CBRACE func_block
-   23 chain_param: chain_param . namelist_decl COLON INTEGER
-   24            | chain_param . namelist_decl COLON INTEGER SEMICOLON
-   25            | chain_param . namelist_decl COLON STRING
-   26            | chain_param . namelist_decl COLON STRING SEMICOLON
+   24 chain_param: chain_param . namelist_decl COLON INTEGER
+   25            | chain_param . namelist_decl COLON INTEGER SEMICOLON
+   26            | chain_param . namelist_decl COLON STRING
+   27            | chain_param . namelist_decl COLON STRING SEMICOLON
+   28            | chain_param . NAME REF COLON INTEGER SEMICOLON
+   29            | chain_param . NAME REF COLON INTEGER
+   30            | chain_param . NAME REF COLON STRING
 
-    NAME    shift, and go to state 103
-    CBRACE  shift, and go to state 118
+    NAME    shift, and go to state 119
+    CBRACE  shift, and go to state 120
 
-    namelist_decl  go to state 119
+    namelist_decl  go to state 121
 
 
 state 105
 
-   27 chain_param: namelist_decl . COLON INTEGER SEMICOLON
-   28            | namelist_decl . COLON INTEGER
-   29            | namelist_decl . COLON STRING SEMICOLON
-   30            | namelist_decl . COLON STRING
-   31 namelist_decl: namelist_decl . COMA NAME
+   34 chain_param: namelist_decl . COLON INTEGER SEMICOLON
+   35            | namelist_decl . COLON INTEGER
+   36            | namelist_decl . COLON STRING SEMICOLON
+   37            | namelist_decl . COLON STRING
+   38 namelist_decl: namelist_decl . COMA NAME
 
-    COLON  shift, and go to state 120
-    COMA   shift, and go to state 121
+    COLON  shift, and go to state 122
+    COMA   shift, and go to state 123
 
 
 state 106
@@ -1587,32 +1612,35 @@ state 106
 
     NAME  shift, and go to state 103
 
-    chain_param    go to state 122
+    NAME      [reduce using rule 23 (chain_param)]
+    $default  reduce using rule 23 (chain_param)
+
+    chain_param    go to state 124
     namelist_decl  go to state 105
 
 
 state 107
 
-   63 expr: NAME RECOPENBRACE expr RECCLOSEBRACE .
+   70 expr: NAME RECOPENBRACE expr RECCLOSEBRACE .
 
-    $default  reduce using rule 63 (expr)
+    $default  reduce using rule 70 (expr)
 
 
 state 108
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   67 act_params: expr .
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   75 act_params: expr .
 
     OR   shift, and go to state 51
     AND  shift, and go to state 52
@@ -1627,28 +1655,28 @@ state 108
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 67 (act_params)
+    $default  reduce using rule 75 (act_params)
 
 
 state 109
 
-   65 expr: NAME OBRACE $@4 act_params . CBRACE
-   66 act_params: act_params . COMA expr
+   72 expr: NAME OBRACE $@4 act_params . CBRACE
+   74 act_params: act_params . COMA expr
 
-    COMA    shift, and go to state 123
-    CBRACE  shift, and go to state 124
+    COMA    shift, and go to state 125
+    CBRACE  shift, and go to state 126
 
 
 state 110
 
-   61 expr: STRINGCONST RECOPENBRACE expr RECCLOSEBRACE .
+   68 expr: STRINGCONST RECOPENBRACE expr RECCLOSEBRACE .
 
-    $default  reduce using rule 61 (expr)
+    $default  reduce using rule 68 (expr)
 
 
 state 111
 
-   33 block: BLOCK . commands KCOLB
+   40 block: BLOCK . commands KCOLB
 
     NAME   shift, and go to state 1
     IF     shift, and go to state 2
@@ -1657,9 +1685,9 @@ state 111
     LABEL  shift, and go to state 5
     GOTO   shift, and go to state 6
 
-    $default  reduce using rule 73 ($@7)
+    $default  reduce using rule 81 ($@7)
 
-    commands    go to state 125
+    commands    go to state 127
     command     go to state 9
     decl        go to state 10
     decl_var    go to state 11
@@ -1679,37 +1707,37 @@ state 111
 
 state 112
 
-   72 cond: IF expr $@5 THEN block . $@6 ELSE block
+   80 cond: IF expr $@5 THEN block . $@6 ELSE block
 
-    $default  reduce using rule 71 ($@6)
+    $default  reduce using rule 79 ($@6)
 
-    $@6  go to state 126
+    $@6  go to state 128
 
 
 state 113
 
-   41 io: READ OBRACE NAME CBRACE SEMICOLON .
+   48 io: READ OBRACE NAME CBRACE SEMICOLON .
 
-    $default  reduce using rule 41 (io)
+    $default  reduce using rule 48 (io)
 
 
 state 114
 
-   43 io: WRITE OBRACE NUMBER CBRACE SEMICOLON .
+   50 io: WRITE OBRACE NUMBER CBRACE SEMICOLON .
 
-    $default  reduce using rule 43 (io)
+    $default  reduce using rule 50 (io)
 
 
 state 115
 
-   42 io: WRITE OBRACE NAME CBRACE SEMICOLON .
+   49 io: WRITE OBRACE NAME CBRACE SEMICOLON .
 
-    $default  reduce using rule 42 (io)
+    $default  reduce using rule 49 (io)
 
 
 state 116
 
-   75 cycle: $@7 WHILE expr $@8 LOOP . commands POOL
+   83 cycle: $@7 WHILE expr $@8 LOOP . commands POOL
 
     NAME   shift, and go to state 1
     IF     shift, and go to state 2
@@ -1718,9 +1746,9 @@ state 116
     LABEL  shift, and go to state 5
     GOTO   shift, and go to state 6
 
-    $default  reduce using rule 73 ($@7)
+    $default  reduce using rule 81 ($@7)
 
-    commands    go to state 127
+    commands    go to state 129
     command     go to state 9
     decl        go to state 10
     decl_var    go to state 11
@@ -1747,60 +1775,84 @@ state 117
 
 state 118
 
-   22 decl_func: NAME COLON STRING OBRACE chain_param CBRACE . func_block
+   31 chain_param: NAME REF . COLON INTEGER
+   32            | NAME REF . COLON INTEGER SEMICOLON
+   33            | NAME REF . COLON STRING
 
-    BLOCK  shift, and go to state 128
-
-    func_block  go to state 129
+    COLON  shift, and go to state 130
 
 
 state 119
 
-   23 chain_param: chain_param namelist_decl . COLON INTEGER
-   24            | chain_param namelist_decl . COLON INTEGER SEMICOLON
-   25            | chain_param namelist_decl . COLON STRING
-   26            | chain_param namelist_decl . COLON STRING SEMICOLON
-   31 namelist_decl: namelist_decl . COMA NAME
+   28 chain_param: chain_param NAME . REF COLON INTEGER SEMICOLON
+   29            | chain_param NAME . REF COLON INTEGER
+   30            | chain_param NAME . REF COLON STRING
+   39 namelist_decl: NAME .
 
-    COLON  shift, and go to state 130
-    COMA   shift, and go to state 121
+    REF  shift, and go to state 131
+
+    $default  reduce using rule 39 (namelist_decl)
 
 
 state 120
 
-   27 chain_param: namelist_decl COLON . INTEGER SEMICOLON
-   28            | namelist_decl COLON . INTEGER
-   29            | namelist_decl COLON . STRING SEMICOLON
-   30            | namelist_decl COLON . STRING
+   22 decl_func: NAME COLON STRING OBRACE chain_param CBRACE . func_block
 
-    STRING   shift, and go to state 131
-    INTEGER  shift, and go to state 132
+    BLOCK  shift, and go to state 132
+
+    func_block  go to state 133
 
 
 state 121
 
-   31 namelist_decl: namelist_decl COMA . NAME
+   24 chain_param: chain_param namelist_decl . COLON INTEGER
+   25            | chain_param namelist_decl . COLON INTEGER SEMICOLON
+   26            | chain_param namelist_decl . COLON STRING
+   27            | chain_param namelist_decl . COLON STRING SEMICOLON
+   38 namelist_decl: namelist_decl . COMA NAME
 
-    NAME  shift, and go to state 133
+    COLON  shift, and go to state 134
+    COMA   shift, and go to state 123
 
 
 state 122
 
-   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param . CBRACE func_block
-   23 chain_param: chain_param . namelist_decl COLON INTEGER
-   24            | chain_param . namelist_decl COLON INTEGER SEMICOLON
-   25            | chain_param . namelist_decl COLON STRING
-   26            | chain_param . namelist_decl COLON STRING SEMICOLON
+   34 chain_param: namelist_decl COLON . INTEGER SEMICOLON
+   35            | namelist_decl COLON . INTEGER
+   36            | namelist_decl COLON . STRING SEMICOLON
+   37            | namelist_decl COLON . STRING
 
-    NAME    shift, and go to state 103
-    CBRACE  shift, and go to state 134
-
-    namelist_decl  go to state 119
+    STRING   shift, and go to state 135
+    INTEGER  shift, and go to state 136
 
 
 state 123
 
-   66 act_params: act_params COMA . expr
+   38 namelist_decl: namelist_decl COMA . NAME
+
+    NAME  shift, and go to state 137
+
+
+state 124
+
+   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param . CBRACE func_block
+   24 chain_param: chain_param . namelist_decl COLON INTEGER
+   25            | chain_param . namelist_decl COLON INTEGER SEMICOLON
+   26            | chain_param . namelist_decl COLON STRING
+   27            | chain_param . namelist_decl COLON STRING SEMICOLON
+   28            | chain_param . NAME REF COLON INTEGER SEMICOLON
+   29            | chain_param . NAME REF COLON INTEGER
+   30            | chain_param . NAME REF COLON STRING
+
+    NAME    shift, and go to state 119
+    CBRACE  shift, and go to state 138
+
+    namelist_decl  go to state 121
+
+
+state 125
+
+   74 act_params: act_params COMA . expr
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -1808,69 +1860,30 @@ state 123
     OBRACE       shift, and go to state 30
     NOT          shift, and go to state 31
 
-    expr  go to state 135
-
-
-state 124
-
-   65 expr: NAME OBRACE $@4 act_params CBRACE .
-
-    $default  reduce using rule 65 (expr)
-
-
-state 125
-
-    3 commands: commands . command
-   33 block: BLOCK commands . KCOLB
-
-    NAME   shift, and go to state 1
-    IF     shift, and go to state 2
-    READ   shift, and go to state 3
-    WRITE  shift, and go to state 4
-    LABEL  shift, and go to state 5
-    KCOLB  shift, and go to state 136
-    GOTO   shift, and go to state 6
-
-    $default  reduce using rule 73 ($@7)
-
-    command     go to state 38
-    decl        go to state 10
-    decl_var    go to state 11
-    namelist    go to state 12
-    decl_ref    go to state 13
-    decl_label  go to state 14
-    decl_func   go to state 15
-    action      go to state 16
-    assign      go to state 17
-    io          go to state 18
-    goto        go to state 19
-    control     go to state 20
-    cond        go to state 21
-    cycle       go to state 22
-    $@7         go to state 23
+    expr  go to state 139
 
 
 state 126
 
-   72 cond: IF expr $@5 THEN block $@6 . ELSE block
+   72 expr: NAME OBRACE $@4 act_params CBRACE .
 
-    ELSE  shift, and go to state 137
+    $default  reduce using rule 72 (expr)
 
 
 state 127
 
     3 commands: commands . command
-   75 cycle: $@7 WHILE expr $@8 LOOP commands . POOL
+   40 block: BLOCK commands . KCOLB
 
     NAME   shift, and go to state 1
     IF     shift, and go to state 2
-    POOL   shift, and go to state 138
     READ   shift, and go to state 3
     WRITE  shift, and go to state 4
     LABEL  shift, and go to state 5
+    KCOLB  shift, and go to state 140
     GOTO   shift, and go to state 6
 
-    $default  reduce using rule 73 ($@7)
+    $default  reduce using rule 81 ($@7)
 
     command     go to state 38
     decl        go to state 10
@@ -1891,82 +1904,140 @@ state 127
 
 state 128
 
-   36 func_block: BLOCK . $@2 program RETURN expr $@3 SEMICOLON KCOLB
+   80 cond: IF expr $@5 THEN block $@6 . ELSE block
 
-    $default  reduce using rule 34 ($@2)
-
-    $@2  go to state 139
+    ELSE  shift, and go to state 141
 
 
 state 129
+
+    3 commands: commands . command
+   83 cycle: $@7 WHILE expr $@8 LOOP commands . POOL
+
+    NAME   shift, and go to state 1
+    IF     shift, and go to state 2
+    POOL   shift, and go to state 142
+    READ   shift, and go to state 3
+    WRITE  shift, and go to state 4
+    LABEL  shift, and go to state 5
+    GOTO   shift, and go to state 6
+
+    $default  reduce using rule 81 ($@7)
+
+    command     go to state 38
+    decl        go to state 10
+    decl_var    go to state 11
+    namelist    go to state 12
+    decl_ref    go to state 13
+    decl_label  go to state 14
+    decl_func   go to state 15
+    action      go to state 16
+    assign      go to state 17
+    io          go to state 18
+    goto        go to state 19
+    control     go to state 20
+    cond        go to state 21
+    cycle       go to state 22
+    $@7         go to state 23
+
+
+state 130
+
+   31 chain_param: NAME REF COLON . INTEGER
+   32            | NAME REF COLON . INTEGER SEMICOLON
+   33            | NAME REF COLON . STRING
+
+    STRING   shift, and go to state 143
+    INTEGER  shift, and go to state 144
+
+
+state 131
+
+   28 chain_param: chain_param NAME REF . COLON INTEGER SEMICOLON
+   29            | chain_param NAME REF . COLON INTEGER
+   30            | chain_param NAME REF . COLON STRING
+
+    COLON  shift, and go to state 145
+
+
+state 132
+
+   43 func_block: BLOCK . $@2 program RETURN expr $@3 SEMICOLON KCOLB
+
+    $default  reduce using rule 41 ($@2)
+
+    $@2  go to state 146
+
+
+state 133
 
    22 decl_func: NAME COLON STRING OBRACE chain_param CBRACE func_block .
 
     $default  reduce using rule 22 (decl_func)
 
 
-state 130
-
-   23 chain_param: chain_param namelist_decl COLON . INTEGER
-   24            | chain_param namelist_decl COLON . INTEGER SEMICOLON
-   25            | chain_param namelist_decl COLON . STRING
-   26            | chain_param namelist_decl COLON . STRING SEMICOLON
-
-    STRING   shift, and go to state 140
-    INTEGER  shift, and go to state 141
-
-
-state 131
-
-   29 chain_param: namelist_decl COLON STRING . SEMICOLON
-   30            | namelist_decl COLON STRING .
-
-    SEMICOLON  shift, and go to state 142
-
-    $default  reduce using rule 30 (chain_param)
-
-
-state 132
-
-   27 chain_param: namelist_decl COLON INTEGER . SEMICOLON
-   28            | namelist_decl COLON INTEGER .
-
-    SEMICOLON  shift, and go to state 143
-
-    $default  reduce using rule 28 (chain_param)
-
-
-state 133
-
-   31 namelist_decl: namelist_decl COMA NAME .
-
-    $default  reduce using rule 31 (namelist_decl)
-
-
 state 134
 
-   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param CBRACE . func_block
+   24 chain_param: chain_param namelist_decl COLON . INTEGER
+   25            | chain_param namelist_decl COLON . INTEGER SEMICOLON
+   26            | chain_param namelist_decl COLON . STRING
+   27            | chain_param namelist_decl COLON . STRING SEMICOLON
 
-    BLOCK  shift, and go to state 128
-
-    func_block  go to state 144
+    STRING   shift, and go to state 147
+    INTEGER  shift, and go to state 148
 
 
 state 135
 
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
-   66 act_params: act_params COMA expr .
+   36 chain_param: namelist_decl COLON STRING . SEMICOLON
+   37            | namelist_decl COLON STRING .
+
+    SEMICOLON  shift, and go to state 149
+
+    $default  reduce using rule 37 (chain_param)
+
+
+state 136
+
+   34 chain_param: namelist_decl COLON INTEGER . SEMICOLON
+   35            | namelist_decl COLON INTEGER .
+
+    SEMICOLON  shift, and go to state 150
+
+    $default  reduce using rule 35 (chain_param)
+
+
+state 137
+
+   38 namelist_decl: namelist_decl COMA NAME .
+
+    $default  reduce using rule 38 (namelist_decl)
+
+
+state 138
+
+   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param CBRACE . func_block
+
+    BLOCK  shift, and go to state 132
+
+    func_block  go to state 151
+
+
+state 139
+
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
+   74 act_params: act_params COMA expr .
 
     OR   shift, and go to state 51
     AND  shift, and go to state 52
@@ -1981,35 +2052,62 @@ state 135
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 66 (act_params)
+    $default  reduce using rule 74 (act_params)
 
 
-state 136
+state 140
 
-   33 block: BLOCK commands KCOLB .
+   40 block: BLOCK commands KCOLB .
 
-    $default  reduce using rule 33 (block)
+    $default  reduce using rule 40 (block)
 
 
-state 137
+state 141
 
-   72 cond: IF expr $@5 THEN block $@6 ELSE . block
+   80 cond: IF expr $@5 THEN block $@6 ELSE . block
 
     BLOCK  shift, and go to state 111
 
-    block  go to state 145
+    block  go to state 152
 
 
-state 138
+state 142
 
-   75 cycle: $@7 WHILE expr $@8 LOOP commands POOL .
+   83 cycle: $@7 WHILE expr $@8 LOOP commands POOL .
 
-    $default  reduce using rule 75 (cycle)
+    $default  reduce using rule 83 (cycle)
 
 
-state 139
+state 143
 
-   36 func_block: BLOCK $@2 . program RETURN expr $@3 SEMICOLON KCOLB
+   33 chain_param: NAME REF COLON STRING .
+
+    $default  reduce using rule 33 (chain_param)
+
+
+state 144
+
+   31 chain_param: NAME REF COLON INTEGER .
+   32            | NAME REF COLON INTEGER . SEMICOLON
+
+    SEMICOLON  shift, and go to state 153
+
+    $default  reduce using rule 31 (chain_param)
+
+
+state 145
+
+   28 chain_param: chain_param NAME REF COLON . INTEGER SEMICOLON
+   29            | chain_param NAME REF COLON . INTEGER
+   30            | chain_param NAME REF COLON . STRING
+
+    STRING   shift, and go to state 154
+    INTEGER  shift, and go to state 155
+
+
+state 146
+
+   43 func_block: BLOCK $@2 . program RETURN expr $@3 SEMICOLON KCOLB
 
     NAME   shift, and go to state 1
     IF     shift, and go to state 2
@@ -2018,10 +2116,10 @@ state 139
     LABEL  shift, and go to state 5
     GOTO   shift, and go to state 6
 
-    WHILE     reduce using rule 73 ($@7)
+    WHILE     reduce using rule 81 ($@7)
     $default  reduce using rule 1 (program)
 
-    program     go to state 146
+    program     go to state 156
     commands    go to state 8
     command     go to state 9
     decl        go to state 10
@@ -2040,78 +2138,109 @@ state 139
     $@7         go to state 23
 
 
-state 140
-
-   25 chain_param: chain_param namelist_decl COLON STRING .
-   26            | chain_param namelist_decl COLON STRING . SEMICOLON
-
-    SEMICOLON  shift, and go to state 147
-
-    $default  reduce using rule 25 (chain_param)
-
-
-state 141
-
-   23 chain_param: chain_param namelist_decl COLON INTEGER .
-   24            | chain_param namelist_decl COLON INTEGER . SEMICOLON
-
-    SEMICOLON  shift, and go to state 148
-
-    $default  reduce using rule 23 (chain_param)
-
-
-state 142
-
-   29 chain_param: namelist_decl COLON STRING SEMICOLON .
-
-    $default  reduce using rule 29 (chain_param)
-
-
-state 143
-
-   27 chain_param: namelist_decl COLON INTEGER SEMICOLON .
-
-    $default  reduce using rule 27 (chain_param)
-
-
-state 144
-
-   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param CBRACE func_block .
-
-    $default  reduce using rule 21 (decl_func)
-
-
-state 145
-
-   72 cond: IF expr $@5 THEN block $@6 ELSE block .
-
-    $default  reduce using rule 72 (cond)
-
-
-state 146
-
-   36 func_block: BLOCK $@2 program . RETURN expr $@3 SEMICOLON KCOLB
-
-    RETURN  shift, and go to state 149
-
-
 state 147
 
-   26 chain_param: chain_param namelist_decl COLON STRING SEMICOLON .
+   26 chain_param: chain_param namelist_decl COLON STRING .
+   27            | chain_param namelist_decl COLON STRING . SEMICOLON
+
+    SEMICOLON  shift, and go to state 157
 
     $default  reduce using rule 26 (chain_param)
 
 
 state 148
 
-   24 chain_param: chain_param namelist_decl COLON INTEGER SEMICOLON .
+   24 chain_param: chain_param namelist_decl COLON INTEGER .
+   25            | chain_param namelist_decl COLON INTEGER . SEMICOLON
+
+    SEMICOLON  shift, and go to state 158
 
     $default  reduce using rule 24 (chain_param)
 
 
 state 149
 
-   36 func_block: BLOCK $@2 program RETURN . expr $@3 SEMICOLON KCOLB
+   36 chain_param: namelist_decl COLON STRING SEMICOLON .
+
+    $default  reduce using rule 36 (chain_param)
+
+
+state 150
+
+   34 chain_param: namelist_decl COLON INTEGER SEMICOLON .
+
+    $default  reduce using rule 34 (chain_param)
+
+
+state 151
+
+   21 decl_func: NAME COLON INTEGER OBRACE $@1 chain_param CBRACE func_block .
+
+    $default  reduce using rule 21 (decl_func)
+
+
+state 152
+
+   80 cond: IF expr $@5 THEN block $@6 ELSE block .
+
+    $default  reduce using rule 80 (cond)
+
+
+state 153
+
+   32 chain_param: NAME REF COLON INTEGER SEMICOLON .
+
+    $default  reduce using rule 32 (chain_param)
+
+
+state 154
+
+   30 chain_param: chain_param NAME REF COLON STRING .
+
+    $default  reduce using rule 30 (chain_param)
+
+
+state 155
+
+   28 chain_param: chain_param NAME REF COLON INTEGER . SEMICOLON
+   29            | chain_param NAME REF COLON INTEGER .
+
+    SEMICOLON  shift, and go to state 159
+
+    $default  reduce using rule 29 (chain_param)
+
+
+state 156
+
+   43 func_block: BLOCK $@2 program . RETURN expr $@3 SEMICOLON KCOLB
+
+    RETURN  shift, and go to state 160
+
+
+state 157
+
+   27 chain_param: chain_param namelist_decl COLON STRING SEMICOLON .
+
+    $default  reduce using rule 27 (chain_param)
+
+
+state 158
+
+   25 chain_param: chain_param namelist_decl COLON INTEGER SEMICOLON .
+
+    $default  reduce using rule 25 (chain_param)
+
+
+state 159
+
+   28 chain_param: chain_param NAME REF COLON INTEGER SEMICOLON .
+
+    $default  reduce using rule 28 (chain_param)
+
+
+state 160
+
+   43 func_block: BLOCK $@2 program RETURN . expr $@3 SEMICOLON KCOLB
 
     NUMBER       shift, and go to state 27
     NAME         shift, and go to state 28
@@ -2119,24 +2248,24 @@ state 149
     OBRACE       shift, and go to state 30
     NOT          shift, and go to state 31
 
-    expr  go to state 150
+    expr  go to state 161
 
 
-state 150
+state 161
 
-   36 func_block: BLOCK $@2 program RETURN expr . $@3 SEMICOLON KCOLB
-   45 expr: expr . MUL expr
-   46     | expr . DIV expr
-   47     | expr . ADD expr
-   48     | expr . SUB expr
-   49     | expr . AND expr
-   50     | expr . OR expr
-   51     | expr . LT expr
-   52     | expr . LE expr
-   53     | expr . GT expr
-   54     | expr . GE expr
-   55     | expr . EQ expr
-   56     | expr . NE expr
+   43 func_block: BLOCK $@2 program RETURN expr . $@3 SEMICOLON KCOLB
+   52 expr: expr . MUL expr
+   53     | expr . DIV expr
+   54     | expr . ADD expr
+   55     | expr . SUB expr
+   56     | expr . AND expr
+   57     | expr . OR expr
+   58     | expr . LT expr
+   59     | expr . LE expr
+   60     | expr . GT expr
+   61     | expr . GE expr
+   62     | expr . EQ expr
+   63     | expr . NE expr
 
     OR   shift, and go to state 51
     AND  shift, and go to state 52
@@ -2151,27 +2280,27 @@ state 150
     DIV  shift, and go to state 61
     MUL  shift, and go to state 62
 
-    $default  reduce using rule 35 ($@3)
+    $default  reduce using rule 42 ($@3)
 
-    $@3  go to state 151
-
-
-state 151
-
-   36 func_block: BLOCK $@2 program RETURN expr $@3 . SEMICOLON KCOLB
-
-    SEMICOLON  shift, and go to state 152
+    $@3  go to state 162
 
 
-state 152
+state 162
 
-   36 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON . KCOLB
+   43 func_block: BLOCK $@2 program RETURN expr $@3 . SEMICOLON KCOLB
 
-    KCOLB  shift, and go to state 153
+    SEMICOLON  shift, and go to state 163
 
 
-state 153
+state 163
 
-   36 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON KCOLB .
+   43 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON . KCOLB
 
-    $default  reduce using rule 36 (func_block)
+    KCOLB  shift, and go to state 164
+
+
+state 164
+
+   43 func_block: BLOCK $@2 program RETURN expr $@3 SEMICOLON KCOLB .
+
+    $default  reduce using rule 43 (func_block)

@@ -1,7 +1,9 @@
-f:integer(x: integer)
+f:integer(x->: integer; y: integer; z->: integer)
 block
-return x/4;
+y:= 3;
+return x+y;
 kcolb
-x, y: integer;
-x:= 1;
-y:= f(x+f(2));
+q, w, z: integer;
+q:= 1;
+w:= 2;
+q:= f(q, w, z);
