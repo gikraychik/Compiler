@@ -11,7 +11,7 @@
 
 using namespace std;
 
-ostringstream code, funcs;
+ostringstream *code, *funcs;
 vector<int> v;
 map<char *, char *> m;
 vector<char *> names;
@@ -19,7 +19,7 @@ int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
 stack<int> while_counter;
-//map<char *, vector<int *> >funcs;
+//map<char *, vector<int *> >*funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
@@ -48,12 +48,11 @@ void yyerror(const char *s)
 	return 1;
 }*/
 
-void swap(ostringstream &stream1, ostringstream &stream2)
+void swap(ostringstream *&stream1, ostringstream *&stream2)
 {
-	ostringstream s;
-	s << stream1.str();
-	stream2.str(stream1.str());
-	stream2.str(s.str());
+	ostringstream *s = stream1;
+	stream1 = stream2;
+	stream2 = s;
 	/*string s = stream1.str();
 	stream1.str(stream2.str());
 	stream2.str(s);*/
@@ -97,7 +96,7 @@ stack<info *> infoes;
 
 void move(char *name1, char *name2)
 {
-	code << "MOVE " << name1 << ", " << name2 << endl;
+	*code << "MOVE " << name1 << ", " << name2 << endl;
 }
 void reverse(char s[])
 {
@@ -222,11 +221,11 @@ int init_const_string(const char *value)
 }*/
 void ternary(const char *s, char *name1, char *name2, char *name3)
 {
-	code << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
+	*code << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
 }
 void set_label(const char *name)
 {
-	code << "LABEL " << name << endl;
+	*code << "LABEL " << name << endl;
 }
 void addVars(map<char *, char *> &m, const char *str)
 {
@@ -249,7 +248,7 @@ void addVars(map<char *, char *> &m, const char *str)
 }
 void goto_name(const char *name)
 {
-	code << "GOTO " << name << endl;
+	*code << "GOTO " << name << endl;
 }
 void goto_label(const char *label)
 {
@@ -259,13 +258,15 @@ void goto_label(const char *label)
 	
 int main()
 {
-	funcs << "STRING myVar, \"END\"" << endl;
-	funcs << "GOTO myVar" << endl;
+	code = new ostringstream();
+	funcs = new ostringstream();
+	cout << "STRING myVar, \"END\"" << endl;
+	*funcs << "GOTO myVar" << "\n";
 	v.push_back(0);
 	yyparse();
-	funcs << "LABEL END" << endl;
-	//cout << code.str();
-	cout << funcs.str();
+	*funcs << "LABEL END" << endl;
+	cout << (*code).str();
+	cout << (*funcs).str();
 }
 %}
 
@@ -426,7 +427,7 @@ func_block :	BLOCK
 			free(what);
 			where = inf->ret_addr;
 			//char *new_name = itoa(init_const_string(""));
-			//code << "INDIR " << where << ", " << new_name << endl;
+			//*code << "INDIR " << where << ", " << new_name << endl;
 			//goto_name(new_name);
 			goto_name(where);
 			//cout << "inf: " << inf->ret_val << endl;
@@ -452,21 +453,21 @@ assign :	NAME ASSIGN expr SEMICOLON
 		;
 io :		READ OBRACE NAME CBRACE SEMICOLON
 		{
-			code << "READ " << match($3) << endl;
+			*code << "READ " << match($3) << endl;
 		}
 		| WRITE OBRACE NAME CBRACE SEMICOLON
 		{
-			code << "WRITE " << match($3) << endl;
+			*code << "WRITE " << match($3) << endl;
 		}
 		| WRITE OBRACE NUMBER CBRACE SEMICOLON
 		{
-			code << "WRITE " << $3 << endl;
+			*code << "WRITE " << $3 << endl;
 		}
 		;
 goto : 		GOTO NAME SEMICOLON
 		{
 			char *name = match($2);
-			if (name == NULL) { code << "GOTO " << "" << endl; }
+			if (name == NULL) { *code << "GOTO " << "" << endl; }
 			else { goto_label(name); }
 		}
 		;
@@ -554,7 +555,7 @@ expr : 		expr MUL expr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
-			code << "NOT " << $<string>2 << ", " << name << endl;
+			*code << "NOT " << $<string>2 << ", " << name << endl;
 		}
 		| OBRACE expr CBRACE
 		{
@@ -576,7 +577,7 @@ expr : 		expr MUL expr
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
-			code << "IND " << new_name << ", " << itoa(v.back()-2) << ", " << name << endl;
+			*code << "IND " << new_name << ", " << itoa(v.back()-2) << ", " << name << endl;
 		}
 		| NAME
 		{
@@ -593,7 +594,7 @@ expr : 		expr MUL expr
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
-			code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+			*code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
 		}
 		| NAME OBRACE
 		{
@@ -654,11 +655,11 @@ cond :		IF expr
 		{
 			char *name_var = itoa(v.back());
 			char *name_label = get_label();
-			code << "BRANCH " << name_var << ", " << name_label << endl;
+			*code << "BRANCH " << name_var << ", " << name_label << endl;
 			free(name_var);
 			//free(name_label);
 			//name_label = get_label();
-			code << "GOTO " << get_label() << endl;
+			*code << "GOTO " << get_label() << endl;
 			set_label(name_label);
 			//free(name_label);
 			if_counter.push(num_label);
@@ -666,7 +667,7 @@ cond :		IF expr
 		THEN block
 		{
 			char *name_label = get_label();
-			code << "GOTO " << name_label << endl;
+			*code << "GOTO " << name_label << endl;
 			int first = if_counter.top();
 			name_label = itoa(first);
 			name_label[0] = 'b';
@@ -691,13 +692,13 @@ cycle :		{
 		{
 			char *var_name = itoa(v.back());
 			char *name = itoa(init_int(0));
-			code << "NOT " << var_name << ", " << name << endl;
+			*code << "NOT " << var_name << ", " << name << endl;
 			free(var_name);
 			var_name = strdup(name);
 			free(name);
 			name = get_label();
 			while_counter.push(num_label);
-			code << "BRANCH " << var_name << ", " << name << endl;
+			*code << "BRANCH " << var_name << ", " << name << endl;
 			free(var_name);
 		}
 		LOOP commands POOL
@@ -708,7 +709,7 @@ cycle :		{
 			while_counter.pop();
 			first[0] = 'b';
 			second[0] = 'b';
-			code << "GOTO " << second << endl;
+			*code << "GOTO " << second << endl;
 			set_label(first);
 			free(first);
 			free(second);

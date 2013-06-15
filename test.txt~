@@ -1,13 +1,7 @@
-f:integer(x, y: integer)
+f:integer(x: integer)
 block
-return x+y;
-kcolb
-beta:integer(x, y: integer)
-block
-x:= x + 1;
-return x * y;
+return x/4;
 kcolb
 x, y: integer;
-x:= 1+5;
-y:= 2+6;
-y:= beta(x,y) - f(x, y);
+x:= 1;
+y:= f(x+f(2));
