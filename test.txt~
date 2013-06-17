@@ -1,9 +1,0 @@
-f:integer(x->: integer; y->: integer)
-block
-y:= 3;
-return x+y;
-kcolb
-q, w: integer;
-q:= 1;
-w:= 2;
-q:= f(q, w);

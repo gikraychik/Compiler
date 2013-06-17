@@ -30,6 +30,7 @@ stack<int> curParam;
 char *cur_func_decl = NULL;
 int param_num = 0;
 stack<vector<char *> *> real_params;  //names
+char *last_expr_name = 0;
 
 extern "C"
 {
@@ -173,6 +174,7 @@ info *match_func_info(const char *s)
 }
 char *match_ref(const char *internal_name)
 {
+	if (refs.empty()) { return NULL; }
 	for (map<char *, char *>::iterator i = refs.begin(); i != refs.end(); i++)
 	{
 		char *first = (*i).first;
@@ -266,11 +268,20 @@ bool hasItem(int x, vector<int> &v)
 	}
 	return false;
 }
-char *real_name(const char *name)
+char *real_name(char *name)
 {
+	if (name == NULL) { return NULL; }
 	char *res = match_ref(name);
-	if (res == NULL) { return NULL; }
+	if (res == NULL) { return name; }
 	return res;
+}
+void in_chain_param(const char *type, char *param)
+{
+	names.push_back(param);
+	info *inf = infoes.top();
+	inf->v.push_back(param_num);
+	param_num++;
+	addVars(fm, type);
 }
 int main()
 {
@@ -319,10 +330,7 @@ decl :		decl_var
 		| decl_ref
 		| decl_label
 		;
-type :		STRING
-		{}
-		| INTEGER
-		{}
+type :		STRING | INTEGER
 		;
 decl_var :	namelist COLON STRING SEMICOLON
 		{
@@ -368,6 +376,7 @@ decl_label :	LABEL NAME SEMICOLON
 		;
 decl_func :	NAME COLON INTEGER OBRACE
 		{
+			//fm.clear();
 			param_num = 0;
 			swap(code, funcs);
 			char *name = get_label();
@@ -387,10 +396,29 @@ decl_func :	NAME COLON INTEGER OBRACE
 			infoes.pop();
 			param_num = 0;
 		}
-		| NAME COLON STRING OBRACE chain_param CBRACE func_block
+		| NAME COLON STRING OBRACE
+		{
+			param_num = 0;
+			swap(code, funcs);
+			char *name = get_label();
+			func_beg[$1] = name;
+			set_label(name);
+			char *ret_val = itoa(init_const_string(""));
+			char *ret_addr = itoa(init_const_string(""));
+			info *inf = new info($1, ret_addr, ret_val, "string", v.back() + 1);
+			func_info.insert(pair<char *, info *>($1, inf));		
+			//func_info[$1] = inf;
+			cur_func_decl = $1;
+			infoes.push(inf);
+		}
+		chain_param CBRACE func_block
+		{
+			swap(code, funcs);
+			infoes.pop();
+			param_num = 0;
+		}
 		;
-chain_param : 	/* empty */
-		| chain_param namelist_decl COLON INTEGER
+chain_param : 	chain_param namelist_decl COLON INTEGER
 		{
 			addVars(fm, "integer");
 		}
@@ -408,38 +436,32 @@ chain_param : 	/* empty */
 		}
 		| chain_param NAME REF COLON INTEGER SEMICOLON
 		{
-			names.push_back($2);
-			info *inf = infoes.top();
-			inf->v.push_back(param_num);
-			param_num++;
-			addVars(fm, "integer");
+			in_chain_param("integer", $2);
 		}
 		| chain_param NAME REF COLON INTEGER
 		{
-			names.push_back($2);
-			info *inf = infoes.top();
-			inf->v.push_back(param_num);
-			param_num++;
-			addVars(fm, "integer");
+			in_chain_param("integer", $2);
 		}
 		| chain_param NAME REF COLON STRING
+		{
+			in_chain_param("string", $2);
+		}
+		| chain_param NAME REF COLON STRING SEMICOLON
+		{
+			in_chain_param("string", $2);
+		}
 		| NAME REF COLON INTEGER
 		{
-			names.push_back($2);
-			info *inf = infoes.top();
-			inf->v.push_back(param_num);
-			param_num++;
-			addVars(fm, "integer");
+			in_chain_param("integer", $2);
 		}
 		| NAME REF COLON INTEGER SEMICOLON
 		{
-			names.push_back($2);
-			info *inf = infoes.top();
-			inf->v.push_back(param_num);
-			param_num++;
-			addVars(fm, "integer");
+			in_chain_param("integer", $2);
 		}
 		| NAME REF COLON STRING
+		{
+			in_chain_param("string", $2);
+		}
 		| namelist_decl COLON INTEGER SEMICOLON
 		{
 			addVars(fm, "integer");
@@ -477,9 +499,13 @@ func_block :	BLOCK
 		}		
 		program RETURN expr
 		{
-			info *inf = match_func_info(cur_func_decl);
+			//info *inf = match_func_info(cur_func_decl);
+			info *inf = infoes.top();
 			char *where = inf->ret_val;
-			char *what = itoa(v.back());
+			//cout << "what: " << $<string>3 << endl;
+			//char *what = itoa(v.back());
+			char *what = $<string>3;
+			//cout << "name :" << what << endl;
 			move(what, where);
 			free(what);
 			where = inf->ret_addr;
@@ -505,42 +531,47 @@ action :	assign
 		;
 assign :	NAME ASSIGN expr SEMICOLON
 		{
-			move($<string>3, match($1));
+			move(last_expr_name, real_name(match($1)));
 		}
 		;
 io :		READ OBRACE NAME CBRACE SEMICOLON
 		{
-			*code << "READ " << match($3) << endl;
+			*code << "READ " << real_name(match($3)) << endl;
 		}
-		| WRITE OBRACE NAME CBRACE SEMICOLON
+		| WRITE OBRACE expr CBRACE SEMICOLON
 		{
-			*code << "WRITE " << match($3) << endl;
-		}
-		| WRITE OBRACE NUMBER CBRACE SEMICOLON
-		{
-			*code << "WRITE " << $3 << endl;
+			//char *name = itoa(v.back());
+			char *name = last_expr_name;
+			*code << "WRITE " << real_name(name) << endl;
 		}
 		;
 goto : 		GOTO NAME SEMICOLON
 		{
-			char *name = match($2);
+			char *name = real_name(match($2));
 			if (name == NULL) { *code << "GOTO " << "" << endl; }
 			else { goto_label(name); }
 		}
 		;
-expr : 		expr MUL expr
+expr : 		mexpr
+		{
+			$<string>$ = $<string>1;
+			last_expr_name = $<string>1;
+			//cout << "name" << $<string>1 << endl;
+		}
+		;
+mexpr: 		mexpr MUL mexpr
 		{			
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("MUL", $<string>1, $<string>3, name);
 		}
-		| expr DIV expr
+		| mexpr DIV mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("DIV", $<string>1, $<string>3, name);	
 		}
-		| expr ADD expr
+		| mexpr ADD mexpr
 		{
 			char *name;
 			if (isString)
@@ -552,69 +583,70 @@ expr : 		expr MUL expr
 				name = itoa(init_int(0));
 			}
 			$<string>$ = name;
+			//cout << "add :" << $<string>$ << endl;
 			ternary("ADD", $<string>1, $<string>3, name);
 		}
-		| expr SUB expr
+		| mexpr SUB mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("SUB", $<string>1, $<string>3, name);	
 		}
-		| expr AND expr
+		| mexpr AND mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("AND", $<string>1, $<string>3, name);	
 		}
-		| expr OR expr
+		| mexpr OR mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("OR", $<string>1, $<string>3, name);	
 		}
-		| expr LT expr
+		| mexpr LT mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("LT", $<string>1, $<string>3, name);	
 		}
-		| expr LE expr
+		| mexpr LE mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("LE", $<string>1, $<string>3, name);	
 		}
-		| expr GT expr
+		| mexpr GT mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("GT", $<string>1, $<string>3, name);	
 		}
-		| expr GE expr
+		| mexpr GE mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("GE", $<string>1, $<string>3, name);	
 		}
-		| expr EQ expr
+		| mexpr EQ mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("EQ", $<string>1, $<string>3, name);	
 		}
-		| expr NE expr
+		| mexpr NE mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			ternary("NE", $<string>1, $<string>3, name);	
 		}
-		| NOT expr
+		| NOT mexpr
 		{
 			char *name = itoa(init_int(0));
 			$<string>$ = name;
 			*code << "NOT " << $<string>2 << ", " << name << endl;
 		}
-		| OBRACE expr CBRACE
+		| OBRACE mexpr CBRACE
 		{
 			$<string>$ = $<string>2;
 		}
@@ -628,7 +660,7 @@ expr : 		expr MUL expr
 			char *name = itoa(num);
 			$<string>$ = name;
 		}
-		| STRINGCONST RECOPENBRACE expr RECCLOSEBRACE
+		| STRINGCONST RECOPENBRACE mexpr RECCLOSEBRACE
 		{		
 			char *new_name = itoa(init_const_string($<string>1));
 			int num = init_const_string("");
@@ -638,20 +670,21 @@ expr : 		expr MUL expr
 		}
 		| NAME
 		{
-			char *name = match($1);
+			char *name = real_name(match($1));
 			if (strings.find(name) == strings.end())
 			{
 				isString = false;
 			}
 			else { isString = true; }
 			$<string>$ = name;
+			//cout << "name :" << $<string>$ << endl;
 		}
-		| NAME RECOPENBRACE expr RECCLOSEBRACE
+		| NAME RECOPENBRACE mexpr RECCLOSEBRACE
 		{	
 			int num = init_const_string("");
 			char *name = itoa(num);
 			$<string>$ = name;
-			*code << "IND " << match($<string>1) << ", " << itoa(v.back()-1) << ", " << name << endl;
+			*code << "IND " << real_name(match($<string>1)) << ", " << itoa(v.back()-1) << ", " << name << endl;
 		}
 		| NAME OBRACE
 		{
@@ -704,8 +737,9 @@ act_params :	/* empty */
 			//char *name = itoa(v.back());
 			vector<char *> *v = real_params.top();
 			info *inf = infoes.top();
-			char *name = $<string>3;
-			$<string>$ = $<string>3;
+			//char *name = $<string>3;
+			char *name = last_expr_name;
+			$<string>$ = last_expr_name;
 			char *dest = itoa(curParam.top());
 			if (hasItem(param_num, inf->v))
 			{
@@ -720,8 +754,9 @@ act_params :	/* empty */
 		{
 			//char *name = itoa(v.back());
 			vector<char *> *v = real_params.top();
-			char *name = $<string>1;
-			$<string>$ = $<string>1;
+			//char *name = $<string>1;
+			char *name = last_expr_name;
+			$<string>$ = last_expr_name;
 			char *dest = itoa(curParam.top());
 			info *inf = infoes.top();
 			if (hasItem(param_num, inf->v))
@@ -739,7 +774,8 @@ control :	cond
 		;
 cond :		IF expr
 		{
-			char *name_var = itoa(v.back());
+			//char *name_var = itoa(v.back());
+			char *name_var = last_expr_name;
 			char *name_label = get_label();
 			*code << "BRANCH " << name_var << ", " << name_label << endl;
 			free(name_var);
@@ -779,16 +815,16 @@ cycle :		{
 		}
 		WHILE expr
 		{
-			char *var_name = itoa(v.back());
+			//char *var_name = itoa(v.back());
+			char *var_name = last_expr_name;
 			char *name = itoa(init_int(0));
 			*code << "NOT " << var_name << ", " << name << endl;
-			free(var_name);
 			var_name = strdup(name);
 			free(name);
 			name = get_label();
 			while_counter.push(num_label);
 			*code << "BRANCH " << var_name << ", " << name << endl;
-			free(var_name);
+			last_expr_name = NULL;
 		}
 		LOOP commands POOL
 		{
@@ -798,13 +834,10 @@ cycle :		{
 			while_counter.pop();
 			first[0] = 'b';
 			second[0] = 'b';
-			//*code << "GOTO " << second << endl;
 			goto_label(second);
 			set_label(first);
 			free(first);
 			free(second);
 		}
 		;
-
-
 %%

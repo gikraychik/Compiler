@@ -10,3 +10,17 @@ read(y);
 read(z);
 result, left2: integer;
 result := f(x, y, z);
+
+x, y, z, res: integer;
+read(x);
+y:= 1;
+while (x+15) loop
+	y:= 1;
+	while (y) loop
+		y:= y + 5;
+		x:= x + 4;
+	pool
+	res:= res + y;
+	y:= 1;
+pool
+write(res+6);
