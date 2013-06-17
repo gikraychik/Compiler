@@ -1,12 +1,5 @@
-f:integer(x, y: integer; z->:integer)
-block
-res, left: integer;
-if (y == 0) ==> block res := 0; kcolb !=> block res := 1; z:= x / y; kcolb
-return res;
-kcolb
-x, y, z: integer;
-read(x);
-read(y);
-read(z);
-result, left2: integer;
-result := f(x, y, z);
+s1, s2: string;
+s1:= "hello";
+s2:= s1[2+3] + s2;
+x, y: integer;
+x:= s1 == s2;

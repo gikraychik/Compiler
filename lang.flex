@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include "analis.tab.h"
-#define YYSTYPE
+
 %}
 
 %option noyywrap 
@@ -10,12 +10,10 @@
 
 DIGIT [0-9]
 NAME [a-zA-Z][a-zA-Z0-9]*
-LABELNAME [a-zA-Z0-9]+
 QUOTE [\"]
-STRINGCONST [a-zA-Z0-9]+
+STRINGCONST [a-zA-Z0-9]*
 WS [ \t\n]+
 WSN [ \t\n]*
-DELIM {WS}|[;]
 
 %%
 <INITIAL>

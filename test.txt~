@@ -1,0 +1,12 @@
+s1, s2, s3: string;
+s1:= "h";
+s2:= "hhhhhhhhhh";
+while (1) loop
+	str, p: string;
+	str := "";
+	while (s1 == s2) loop
+		str := str + s1;
+	pool
+	p := p[2] + str;
+pool
+write(s1);

@@ -48,48 +48,44 @@ extern int yydebug;
    enum yytokentype {
      NUMBER = 258,
      NAME = 259,
-     LABELNAME = 260,
-     REF = 261,
-     COLON = 262,
-     SEMICOLON = 263,
-     DELIM = 264,
-     STRINGCONST = 265,
-     QUOTE = 266,
-     STRING = 267,
-     INTEGER = 268,
-     COMA = 269,
-     RETURN = 270,
-     ASSIGN = 271,
-     IF = 272,
-     WHILE = 273,
-     LOOP = 274,
-     POOL = 275,
-     READ = 276,
-     WRITE = 277,
-     EOFF = 278,
-     LABEL = 279,
-     RECOPENBRACE = 280,
-     RECCLOSEBRACE = 281,
-     BLOCK = 282,
-     KCOLB = 283,
-     THEN = 284,
-     ELSE = 285,
-     GOTO = 286,
-     OBRACE = 287,
-     CBRACE = 288,
-     OR = 289,
-     AND = 290,
-     NOT = 291,
-     NE = 292,
-     EQ = 293,
-     GE = 294,
-     LE = 295,
-     GT = 296,
-     LT = 297,
-     SUB = 298,
-     ADD = 299,
-     DIV = 300,
-     MUL = 301
+     REF = 260,
+     COLON = 261,
+     SEMICOLON = 262,
+     STRINGCONST = 263,
+     STRING = 264,
+     INTEGER = 265,
+     COMA = 266,
+     RETURN = 267,
+     ASSIGN = 268,
+     IF = 269,
+     WHILE = 270,
+     LOOP = 271,
+     POOL = 272,
+     READ = 273,
+     WRITE = 274,
+     LABEL = 275,
+     RECOPENBRACE = 276,
+     RECCLOSEBRACE = 277,
+     BLOCK = 278,
+     KCOLB = 279,
+     THEN = 280,
+     ELSE = 281,
+     GOTO = 282,
+     OBRACE = 283,
+     CBRACE = 284,
+     OR = 285,
+     AND = 286,
+     NOT = 287,
+     NE = 288,
+     EQ = 289,
+     GE = 290,
+     LE = 291,
+     GT = 292,
+     LT = 293,
+     SUB = 294,
+     ADD = 295,
+     DIV = 296,
+     MUL = 297
    };
 #endif
 
@@ -98,14 +94,14 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2049 of yacc.c  */
-#line 301 "analis.y"
+#line 300 "analis.y"
 
 	int number;
 	char *string;
 
 
 /* Line 2049 of yacc.c  */
-#line 109 "analis.tab.h"
+#line 105 "analis.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

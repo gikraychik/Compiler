@@ -19,7 +19,6 @@ int num_label = 0;
 map<char *, char *> refs;
 stack<int> if_counter;
 stack<int> while_counter;
-//map<char *, vector<int *> >*funcs;
 map<char *, char *> fm;
 map<char *, char *> tmp;
 map<char *, char *> func_beg;
@@ -56,9 +55,6 @@ void swap(ostringstream *&stream1, ostringstream *&stream2)
 	ostringstream *s = stream1;
 	stream1 = stream2;
 	stream2 = s;
-	/*string s = stream1.str();
-	stream1.str(stream2.str());
-	stream2.str(s);*/
 }
 
 class info
@@ -203,27 +199,19 @@ int init_int(char *name)
 int init_const_string(const char *value)
 {
 	isString = true;
-	strings.insert(value);
+	char *name = get_name();
+	strings.insert(name);
 	if (!strcmp(value, ""))
 	{
-		cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl;
+		cout << "STRING " << name << ", " << "\"" << value << "\"" << endl;
 	}
 	else
 	{
-		if (value[0] == '"') { cout << "STRING " << get_name() << ", " << value << endl; }
-		else { cout << "STRING " << get_name() << ", " << "\"" << value << "\"" << endl; }
+		if (value[0] == '"') { cout << "STRING " << name << ", " << value << endl; }
+		else { cout << "STRING " << name << ", " << "\"" << value << "\"" << endl; }
 	}
 	return v.back();
 }
-/*int init_string(char *name)
-{
-	isString = true;
-	strings.insert(value);
-	char *s = get_name();
-	cout << "STRING " << get_name() << ", " << "" << endl;
-	move(s, name);
-	return v.back();
-}*/
 void ternary(const char *s, char *name1, char *name2, char *name3)
 {
 	*code << s << " " << name1 << ", " << name2 << ", " << name3 << "\n";
@@ -236,10 +224,13 @@ void addVars(map<char *, char *> &m, const char *str)
 {
 	if (!strcmp(str, "string"))
 	{
-		strings.insert(str);
+		//strings.insert(str);
+		char *name;
 		for (int i = 0; i < names.size(); i++)
 		{
-			m[names[i]] = itoa(init_const_string(""));
+			name = itoa(init_const_string(""));
+			m[names[i]] = name;
+			//strings.insert(name);
 		}
 	}
 	else
@@ -283,6 +274,14 @@ void in_chain_param(const char *type, char *param)
 	param_num++;
 	addVars(fm, type);
 }
+bool inStrings(char *name)
+{
+	for (set<char *>::iterator i = strings.begin(); i != strings.end(); i++)
+	{
+		if (!strcmp(*i, name)) { return true; }
+	}
+	return false;
+}
 int main()
 {
 	code = new ostringstream();
@@ -303,8 +302,8 @@ int main()
 	char *string;
 }
 
-%token <number>NUMBER <string>NAME <string>LABELNAME REF COLON SEMICOLON DELIM <string>STRINGCONST QUOTE STRING INTEGER COMA RETURN ASSIGN
-%token IF WHILE LOOP POOL READ WRITE EOFF
+%token <number>NUMBER <string>NAME REF COLON SEMICOLON <string>STRINGCONST STRING INTEGER COMA RETURN ASSIGN
+%token IF WHILE LOOP POOL READ WRITE
 %token LABEL RECOPENBRACE RECCLOSEBRACE
 %token BLOCK KCOLB THEN ELSE GOTO OBRACE CBRACE
 
@@ -417,6 +416,49 @@ decl_func :	NAME COLON INTEGER OBRACE
 			infoes.pop();
 			param_num = 0;
 		}
+		| NAME COLON STRING OBRACE
+		{
+			param_num = 0;
+			swap(code, funcs);
+			char *name = get_label();
+			func_beg[$1] = name;
+			set_label(name);
+			char *ret_val = itoa(init_const_string(""));
+			char *ret_addr = itoa(init_const_string(""));
+			info *inf = new info($1, ret_addr, ret_val, "string", v.back() + 1);
+			func_info.insert(pair<char *, info *>($1, inf));		
+			//func_info[$1] = inf;
+			cur_func_decl = $1;
+			infoes.push(inf);
+		}
+		CBRACE func_block
+		{
+			swap(code, funcs);
+			infoes.pop();
+			param_num = 0;
+		}
+		| NAME COLON INTEGER OBRACE
+		{
+			//fm.clear();
+			param_num = 0;
+			swap(code, funcs);
+			char *name = get_label();
+			func_beg[$1] = name;
+			set_label(name);
+			char *ret_val = itoa(init_int(0));
+			char *ret_addr = itoa(init_const_string(""));
+			info *inf = new info($1, ret_addr, ret_val, "integer", v.back() + 1);
+			func_info.insert(pair<char *, info *>($1, inf));		
+			//func_info[$1] = inf;
+			cur_func_decl = $1;
+			infoes.push(inf);
+		}		
+		CBRACE func_block
+		{
+			swap(code, funcs);
+			infoes.pop();
+			param_num = 0;
+		}
 		;
 chain_param : 	chain_param namelist_decl COLON INTEGER
 		{
@@ -499,25 +541,13 @@ func_block :	BLOCK
 		}		
 		program RETURN expr
 		{
-			//info *inf = match_func_info(cur_func_decl);
 			info *inf = infoes.top();
 			char *where = inf->ret_val;
-			//cout << "what: " << $<string>3 << endl;
-			//char *what = itoa(v.back());
-			char *what = $<string>3;
-			//cout << "name :" << what << endl;
+			char *what = last_expr_name;
 			move(what, where);
 			free(what);
 			where = inf->ret_addr;
-			//char *new_name = itoa(init_const_string(""));
-			//*code << "INDIR " << where << ", " << new_name << endl;
-			//goto_name(new_name);
-			goto_name(where);
-			//cout << "inf: " << inf->ret_val << endl;
-			//free(where);
-			//ret_val.pop();
-			//ret_addr.pop();
-			
+			goto_name(where);	
 		}		
 		SEMICOLON KCOLB
 		{
@@ -671,7 +701,8 @@ mexpr: 		mexpr MUL mexpr
 		| NAME
 		{
 			char *name = real_name(match($1));
-			if (strings.find(name) == strings.end())
+			//if (strings.find(name) == strings.end())
+			if (!inStrings(name))
 			{
 				isString = false;
 			}
@@ -699,7 +730,7 @@ mexpr: 		mexpr MUL mexpr
 		{
 			int num;
 			info *inf = infoes.top();
-			if (inf->type == "string")
+			if (!strcmp(inf->type, "string"))
 			{
 				num = init_const_string("");
 			}

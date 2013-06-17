@@ -11,16 +11,27 @@ read(z);
 result, left2: integer;
 result := f(x, y, z);
 
-x, y, z, res: integer;
-read(x);
-y:= 1;
-while (x+15) loop
-	y:= 1;
-	while (y) loop
-		y:= y + 5;
-		x:= x + 4;
+n, x, i, k: integer;
+read (n);
+isSimple: integer(x: integer)
+block
+	return 1;
+kcolb
+i:= 2;
+while (i <= n) loop
+	if (isSimple(i)) ==> block write (i); kcolb !=> block i:= i; kcolb
+	i:= i + 1;
+
+s1, s2, s3: string;
+s1:= "h";
+s2:= "hhhhhhhhhh";
+str, p: string;
+while (s1 != s2) loop
+	str := "";
+	while (str != s1) loop
+		str := str + s1;
 	pool
-	res:= res + y;
-	y:= 1;
+	res := res + str;
 pool
-write(res+6);
+write(res);
+pool

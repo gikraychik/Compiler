@@ -10,3 +10,15 @@ read(y);
 read(z);
 result, left2: integer;
 result := f(x, y, z);
+
+n, x, i, k: integer;
+read (n);
+isSimple: integer(x: integer)
+block
+	return 1;
+kcolb
+i:= 2;
+while (i <= n) loop
+	if (isSimple(i)) ==> block write (i); kcolb !=> block i:= i; kcolb
+	i:= i + 1;
+pool
